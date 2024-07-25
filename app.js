@@ -3,7 +3,7 @@ dotenv.config({ path: "./config.env" });
 import express from "express";
 import cors from "cors";
 import morgan from "morgan";
-
+import authRouter from "./routes/auth.route.js";
 const app = express();
 
 app.use(
@@ -19,5 +19,8 @@ if (process.env.NODE_ENV === "development") {
 }
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+
+//Route Mounting
+app.use("/api/v1/auth", authRouter);
 
 export default app;
