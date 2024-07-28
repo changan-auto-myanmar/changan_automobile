@@ -4,8 +4,9 @@
   "main": "server.js",
   "type": "module",
   "scripts": {
-    "dev": "nodemon server.js",
-    "prod": "node server.js"
+    "dev": "export NODE_ENV=development && nodemon server.js",
+    "prod": "export NODE_ENV=production && nodemon server.js",
+    "start": "node server.js"
   },
   "author": "OTAS",
   "license": "ISC",

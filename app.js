@@ -36,6 +36,6 @@ app.all("*", (req, res, next) => {
   next(err);
 });
 
-app.use(globalErrorHandler);
+// app.use(globalErrorHandler);
 
 export default app;
