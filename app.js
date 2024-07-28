@@ -2,7 +2,6 @@ import dotenv from "dotenv";
 dotenv.config({ path: "./config.env" });
 import express from "express";
 import cors from "cors";
-import morgan from "morgan";
 
 // User Define Module
 import CustomError from "./utils/customError.js";
@@ -18,9 +17,6 @@ app.use(
   })
 );
 
-// if (process.env.NODE_ENV === "development") {
-//   app.use(morgan("dev"));
-// }
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
@@ -39,6 +35,6 @@ app.all("*", (req, res, next) => {
   next(err);
 });
 
-// app.use(globalErrorHandler);
+app.use(globalErrorHandler);
 
 export default app;

@@ -15,7 +15,7 @@ const castErrorHandler = (err) => {
 };
 
 const duplicateKeyErrorHandler = (err) => {
-  const name = err.keyValue.message;
+  const name = err.keyValue.domainName || err.keyValue.email;
   const message = `Already existed ${name}`;
 
   return new CustomError(400, message);

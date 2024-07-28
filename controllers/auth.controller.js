@@ -1,5 +1,6 @@
 import User from "../models/user.model.js";
 import jwt from "jsonwebtoken";
+import asyncErrorHandler from "../utils/asyncErrorHandler.js";
 
 const signInToken = (id) => {
   return jwt.sign({ id }, process.env.SECRET_STR, {
@@ -7,7 +8,7 @@ const signInToken = (id) => {
   });
 };
 
-export const signup = async (req, res, next) => {
+export const signup = asyncErrorHandler(async (req, res, next) => {
   const newUser = await User.create(req.body);
 
   const token = signInToken(newUser._id);
@@ -20,4 +21,4 @@ export const signup = async (req, res, next) => {
   });
 
   next();
-};
+});

@@ -6,7 +6,8 @@ const Schema = mongoose.Schema;
 const userSchema = new Schema({
   domainName: {
     type: String,
-    required: [true, "Please Enter Your Name"],
+    required: [true, "Please Enter Your Domain Name"],
+    unique: true,
   },
   email: {
     type: String,
