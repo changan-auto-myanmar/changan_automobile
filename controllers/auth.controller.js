@@ -32,7 +32,7 @@ export const login = asyncErrorHandler(async (req, res, next) => {
   if (!email || !password) {
     const error = new CustomError(
       400,
-      "Please provid Email ID & Password for login!"
+      "Please provide correct Email ID & Password for login!"
     );
     return next(error);
   }
@@ -47,7 +47,7 @@ export const login = asyncErrorHandler(async (req, res, next) => {
   }
 
   const token = signToken(user._id);
-  const { password: pass, __v, ...rest } = user._doc;
+  const { password: pass, __v, createdAt, ...rest } = user._doc;
 
   res.status(200).json({
     code: 200,
