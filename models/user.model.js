@@ -34,6 +34,7 @@ const userSchema = new Schema({
   role: {
     type: String,
     enum: ["user", "admin", "superadmin"],
+    default: "user",
   },
   createdAt: {
     type: Date,
@@ -42,6 +43,7 @@ const userSchema = new Schema({
 });
 
 userSchema.pre("save", async function (next) {
+  if (!this.isModified("password")) return next();
   this.password = await bcrypt.hash(this.password, 10);
   this.confirmPassword = undefined;
   next();
