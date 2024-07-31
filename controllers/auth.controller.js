@@ -133,12 +133,11 @@ export const forgotPassword = asyncErrorHandler(async (req, res, next) => {
   await user.save({ validateBeforeSave: false });
 
   //3.Send the token back to user email
-  const resetUrl = `${process.env.FRONTEND_URL}reset/${resetToken}`;
+  const resetUrl = `${process.env.FRONTEND_URL}auth/reset-password/${resetToken}`;
   console.log(`resetUrl : ${resetUrl}`);
   const message = `We have recieved a password reset request.Please use the below link to reset password.
    \n\n ${resetUrl} \n\n
   This reset password link will be valid only for 10 min. 
-
   Please note that you cannot reply to this Email.`;
   try {
     await sendEmail({
