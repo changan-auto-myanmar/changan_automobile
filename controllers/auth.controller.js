@@ -6,7 +6,7 @@ import crypto from "crypto";
 import sendEmail from "../utils/email.js";
 import utli from "util";
 
-const signToken = (id) => {
+export const signToken = (id) => {
   return jwt.sign({ id }, process.env.SECRET_STR, {
     expiresIn: process.env.LOGIN_EXPIRES,
   });
@@ -199,7 +199,7 @@ export const resetPassword = asyncErrorHandler(async (req, res, next) => {
   res.status(200).json({
     code: 200,
     status: "success",
-    messgae: `Password successfully reset for your account: ${user.email}`,
+    message: `Password successfully reset for your account: ${user.email}`,
     token: loginToken,
   });
 });
