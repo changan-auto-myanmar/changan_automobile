@@ -8,6 +8,7 @@ import CustomError from "./utils/customError.js";
 import globalErrorHandler from "./controllers/error.controller.js";
 import authRouter from "./routes/auth.route.js";
 import userRouter from "./routes/user.route.js";
+import setupSwagger from "./configs/swagger.config.js";
 const app = express();
 
 app.use(
@@ -28,6 +29,8 @@ app.use(express.json());
 //Route Mounting
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/user", userRouter);
+
+setupSwagger(app);
 
 //404-Error Handler
 app.all("*", (req, res, next) => {
