@@ -103,10 +103,7 @@ export const protect = asyncErrorHandler(async (req, res, next) => {
 export const restrict = (role) => {
   return (req, res, next) => {
     if (req.user.role !== role) {
-      const error = new CustomError(
-        403,
-        "You Do not have permission to perform this action"
-      );
+      const error = new CustomError(403, "Forbidden Access");
       return next(error);
     }
     next();
