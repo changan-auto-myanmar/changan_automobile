@@ -51,7 +51,6 @@ export const login = asyncErrorHandler(async (req, res, next) => {
   const {
     password: pass,
     __v,
-    createdAt,
     passwordResetToken,
     passwordResetTokenExpire,
     ...rest
@@ -85,7 +84,6 @@ export const protect = asyncErrorHandler(async (req, res, next) => {
     token,
     process.env.SECRET_STR
   );
-  console.log(decodedToken);
   //if the user exist
   const user = await User.findById(decodedToken.id);
 
@@ -179,8 +177,6 @@ export const resetPassword = asyncErrorHandler(async (req, res, next) => {
     passwordResetToken: token,
     passwordResetTokenExpire: { $gt: Date.now() },
   });
-
-  console.log(`user : ${user}`);
 
   if (!user) {
     const error = new CustomError(400, "Token is invalid or has expired");
