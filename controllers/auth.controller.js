@@ -48,12 +48,19 @@ export const login = asyncErrorHandler(async (req, res, next) => {
   }
 
   const token = signToken(user._id);
-  const { password: pass, __v, createdAt, ...rest } = user._doc;
+  const {
+    password: pass,
+    __v,
+    createdAt,
+    passwordResetToken,
+    passwordResetTokenExpire,
+    ...rest
+  } = user._doc;
 
   res.status(200).json({
     code: 200,
     status: "success",
-    message: "User successfully sign in.",
+    message: "User successfully log in.",
     data: {
       user: rest,
       token,

@@ -11,6 +11,29 @@ const filterReqObj = (obj, ...allowedFields) => {
   return newObj;
 };
 
+export const getAllUser = asyncErrorHandler(async (req, res, next) => {
+  const users = await User.find();
+
+  if (users.length !== 0) {
+    res.status(200).json({
+      code: 200,
+      status: "success",
+      message: "Successfully fetch user data.",
+      result: users.length,
+      data: {
+        users,
+      },
+    });
+  } else {
+    res.status(200).json({
+      code: 200,
+      status: "success",
+      message: "Successfully fetch user data.No inactive user.",
+      result: users.length,
+    });
+  }
+});
+
 export const updatePassword = asyncErrorHandler(async (req, res, next) => {
   const user = await User.findById(req.user._id).select("+password");
 
@@ -68,7 +91,7 @@ export const updateUserData = asyncErrorHandler(async (req, res, next) => {
   }
 
   const filterObj = filterReqObj(req.body, "domainName", "email");
-  const updatedUser = await User.findByIdAndUpdate(req.user._id, filterObj, {
+  const updatedUser = await User.findByIdAndUpdate(req.user.id, filterObj, {
     runValidators: true,
     new: true,
   });
@@ -89,5 +112,15 @@ export const updateUserData = asyncErrorHandler(async (req, res, next) => {
     data: {
       user: rest,
     },
+  });
+});
+
+export const deactivate = asyncErrorHandler(async (req, res, next) => {
+  await User.findByIdAndUpdate(req.user.id, { active: false });
+
+  res.status(204).json({
+    code: 204,
+    status: "success",
+    message: "User account have been deactivated successfully.",
   });
 });
