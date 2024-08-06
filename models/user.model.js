@@ -32,6 +32,10 @@ const userSchema = new Schema({
       message: "Password Doesn't Match.",
     },
   },
+  active: {
+    type: Boolean,
+    default: true,
+  },
   role: {
     type: String,
     enum: ["admin", "superadmin"],
@@ -41,15 +45,19 @@ const userSchema = new Schema({
     type: Date,
     default: Date.now,
   },
-  passwordChangedAt: Date,
-  passwordResetToken: String,
-  passwordResetTokenExpire: Date,
+  passwordChangedAt: { type: Date, select: false },
+  passwordResetToken: { type: String, select: false },
+  passwordResetTokenExpire: { type: Date, select: false },
 });
 
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
   this.password = await bcrypt.hash(this.password, 10);
   this.confirmPassword = undefined;
+  next();
+});
+userSchema.pre(/^find/, function (next) {
+  this.find({ active: { $ne: true } });
   next();
 });
 
