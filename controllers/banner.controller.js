@@ -71,6 +71,44 @@ export const cmsBanner = asyncErrorHandler(async (req, res, next) => {
   });
 });
 
+export const updateBanner = asyncErrorHandler(async (req, res, next) => {
+  const { id } = req.params;
+  const { domainName } = req.user;
+
+  // Find the banner by ID and domainName
+  const currentBanner = await Banner.findOne({ _id: id, domainName });
+  if (!currentBanner) {
+    return next(
+      new CustomError(404, "Banner not found or not authorized to update")
+    );
+  }
+  const { filename, path: filepath } = req.file;
+  // Delete the old image file from the file system
+  fs.unlinkSync(currentBanner.filepath);
+
+  // Save the new image file to the file system
+
+  // Update the banner with new image details
+  const updatedBanner = await Banner.findByIdAndUpdate(
+    id,
+    { filename, filepath },
+    { new: true }
+  );
+
+  if (!updatedBanner) {
+    return next(new CustomError(404, "Banner update failed"));
+  }
+  const { __v, uploadDate, ...rest } = updatedBanner._doc;
+  res.status(200).json({
+    code: 200,
+    status: "success",
+    message: "Banner Image updated successfully",
+    data: {
+      updatedBanner: rest,
+    },
+  });
+});
+
 export const bannerDelete = asyncErrorHandler(async (req, res, next) => {
   const { id } = req.params;
   const domainName = req.user.domainName;
