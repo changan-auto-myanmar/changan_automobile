@@ -6,6 +6,7 @@ import morgan from "morgan";
 
 // User Define Module
 import CustomError from "./utils/customError.js";
+import bannerRouter from "./routes/banner.route.js";
 import globalErrorHandler from "./controllers/error.controller.js";
 
 const app = express();
@@ -28,9 +29,7 @@ app.use(
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-app.get("/test", (req, res) => {
-  res.send("Test route is working!");
-});
+app.use("/api/v1", express.static("public/banner"), bannerRouter);
 //404-Error Handler
 app.all("*", (req, res, next) => {
   const err = new CustomError(
@@ -40,6 +39,6 @@ app.all("*", (req, res, next) => {
   next(err);
 });
 
-// app.use(globalErrorHandler);
+app.use(globalErrorHandler);
 
 export default app;
