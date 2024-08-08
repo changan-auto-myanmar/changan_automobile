@@ -52,9 +52,9 @@ app.use(express.json());
 //Route Mounting
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/users", userRouter);
+app.use("/api/v1", express.static("public/banners"), bannerRouter);
 
 setupSwagger(app);
-app.use("/api/v1", express.static("public/banners"), bannerRouter);
 //404-Error Handler
 app.all("*", (req, res, next) => {
   const err = new CustomError(
