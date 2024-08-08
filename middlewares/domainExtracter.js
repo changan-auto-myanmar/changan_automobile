@@ -10,7 +10,6 @@ const domainExtracter = asyncErrorHandler(async (req, res, next) => {
   if (!domainName) {
     return next(new CustomError(400, "Domain name extraction failed"));
   }
-
   req.domainName = domainName;
   next();
 });

@@ -4,7 +4,6 @@ import CustomError from "../utils/customError.js";
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     let uploadPath;
-
     // Determine the upload path based on the API endpoint
     if (req.path.includes("/banners")) {
       uploadPath = "public/banners";
