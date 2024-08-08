@@ -21,3 +21,54 @@ export const bannerUpload = asyncErrorHandler(async (req, res, next) => {
     },
   });
 });
+
+export const publicBanner = asyncErrorHandler(async (req, res, next) => {
+  const { domainName } = req;
+
+  if (!domainName) {
+    return next(new CustomError(400, "Domain name not found."));
+  }
+
+  const banners = await Banner.find({ domainName });
+  if (!banners.domainName) {
+    return next(new CustomError(404, "Not register."));
+  }
+
+  if (banners.length === 0) {
+    return next(new CustomError(404, "No banners found for this domain."));
+  }
+
+  res.status(200).json({
+    code: 200,
+    status: "success",
+    data: {
+      banners,
+    },
+  });
+});
+
+export const cmsBanner = asyncErrorHandler(async (req, res, next) => {
+  // Access domainName from the authenticated user's data
+  const domainName = req.user.domainName;
+
+  if (!domainName) {
+    return next(
+      new CustomError(400, "Domain name not found for the authenticated user.")
+    );
+  }
+
+  // Fetch banners for the domain
+  const banners = await Banner.find({ domainName });
+
+  if (banners.length === 0) {
+    return next(new CustomError(404, "No banners found for this domain."));
+  }
+
+  res.status(200).json({
+    code: 200,
+    status: "success",
+    data: {
+      banners,
+    },
+  });
+});
