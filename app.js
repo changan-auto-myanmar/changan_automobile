@@ -9,6 +9,7 @@ import xss from "xss-clean";
 
 // User Define Module
 import CustomError from "./utils/customError.js";
+import bannerRouter from "./routes/banner.route.js";
 import globalErrorHandler from "./controllers/error.controller.js";
 import authRouter from "./routes/auth.route.js";
 import userRouter from "./routes/user.route.js";
@@ -47,13 +48,13 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json({ limit: "10kb" }));
 app.use(sanitize());
 app.use(xss());
-
+app.use(express.json());
 //Route Mounting
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/users", userRouter);
 
 setupSwagger(app);
-
+app.use("/api/v1", express.static("public/banners"), bannerRouter);
 //404-Error Handler
 app.all("*", (req, res, next) => {
   const err = new CustomError(
