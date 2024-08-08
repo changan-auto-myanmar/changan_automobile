@@ -34,10 +34,11 @@ app.use("/api", limiter);
 
 app.use(
   cors({
-    origin: [
-      "http://localhost:5173",
-      "https://changan-auto-myanmar.netlify.app",
-    ],
+    origin: "*",
+    // origin: [
+    //   "http://localhost:5173",
+    //   "https://changan-auto-myanmar.netlify.app",
+    // ],
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
