@@ -1,15 +1,19 @@
 import CustomError from "../utils/customError.js";
 import asyncErrorHandler from "../utils/asyncErrorHandler.js";
 const domainExtracter = asyncErrorHandler(async (req, res, next) => {
-  const hostHeader = req.headers.host;
-  if (!hostHeader) {
-    return next(new CustomError(400, "Host header is missing"));
+  const refererHeader = req.headers.referer || req.headers.origin;
+
+  if (!refererHeader) {
+    return next(new CustomError(400, "Referer or Origin header is missing"));
   }
 
-  const domainName = await hostHeader.split(":")[0]; // In case port number is included
+  // Extract the domain from the Referer or Origin header
+  const domainName = new URL(refererHeader).hostname;
+
   if (!domainName) {
     return next(new CustomError(400, "Domain name extraction failed"));
   }
+
   req.domainName = domainName;
   next();
 });
