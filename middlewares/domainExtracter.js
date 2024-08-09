@@ -15,7 +15,6 @@ const domainExtracter = asyncErrorHandler(async (req, res, next) => {
   }
 
   req.domainName = domainName;
-  console.log("Extracted Frontend Domain Name:", req.domainName); // Debugging line
   next();
 });
 

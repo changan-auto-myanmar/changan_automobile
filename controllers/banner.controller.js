@@ -29,7 +29,6 @@ export const publicBanner = asyncErrorHandler(async (req, res, next) => {
   if (!domainName) {
     return next(new CustomError(400, "Domain name not found."));
   }
-  console.log("Domain Name for Query:", domainName);
   const banners = await Banner.find({ domainName });
 
   if (banners.length === 0) {
