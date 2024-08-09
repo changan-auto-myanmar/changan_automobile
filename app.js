@@ -16,6 +16,7 @@ import userRouter from "./routes/user.route.js";
 import setupSwagger from "./configs/swagger.config.js";
 
 const app = express();
+app.set("trust proxy", true);
 app.use(helmet());
 
 let limiter = rateLimit({
