@@ -74,7 +74,7 @@ export const CompanyLogoUpdate = asyncErrorHandler(async (req, res, next) => {
   const { domainName } = req.user;
 
   // Find the banner by ID and domainName
-  const currentCompanyLogo = await Banner.findOne({ _id: id, domainName });
+  const currentCompanyLogo = await CompanyLogo.findOne({ _id: id, domainName });
   if (!currentCompanyLogo) {
     return next(
       new CustomError(404, "Company Logo not found or not authorized to update")
