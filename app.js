@@ -17,7 +17,6 @@ import setupSwagger from "./configs/swagger.config.js";
 import companyLogoRouter from "./routes/companyLogo.route.js";
 
 const app = express();
-app.set("trust proxy", true);
 app.use(
   helmet({
     contentSecurityPolicy: false,
