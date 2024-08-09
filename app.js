@@ -17,7 +17,11 @@ import setupSwagger from "./configs/swagger.config.js";
 
 const app = express();
 app.set("trust proxy", true);
-app.use(helmet());
+app.use(
+  helmet({
+    contentSecurityPolicy: false,
+  })
+);
 
 let limiter = rateLimit({
   max: 60,
