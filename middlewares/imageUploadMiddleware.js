@@ -7,8 +7,8 @@ const storage = multer.diskStorage({
     // Determine the upload path based on the API endpoint
     if (req.path.includes("/banners")) {
       uploadPath = "public/banners";
-    } else if (req.path.includes("/logos")) {
-      uploadPath = "public/logos";
+    } else if (req.path.includes("/companies/logo")) {
+      uploadPath = "public/companies-logo";
     } else {
       uploadPath = "public/others"; // Default path for other uploads
     }

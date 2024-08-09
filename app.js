@@ -14,6 +14,7 @@ import globalErrorHandler from "./controllers/error.controller.js";
 import authRouter from "./routes/auth.route.js";
 import userRouter from "./routes/user.route.js";
 import setupSwagger from "./configs/swagger.config.js";
+import companyLogoRouter from "./routes/companyLogo.route.js";
 
 const app = express();
 app.set("trust proxy", true);
@@ -60,6 +61,7 @@ app.use(express.json());
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1", express.static("public/banners"), bannerRouter);
+app.use("/api/v1", companyLogoRouter);
 
 setupSwagger(app);
 //404-Error Handler
