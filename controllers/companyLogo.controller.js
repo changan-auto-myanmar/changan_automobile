@@ -80,13 +80,22 @@ export const CompanyLogoUpdate = asyncErrorHandler(async (req, res, next) => {
       new CustomError(404, "Company Logo not found or not authorized to update")
     );
   }
+
+  if (!req.file) {
+    return next(new CustomError(400, "No image is selected to update"));
+  } else {
+    try {
+      if (fs.existsSync(currentCompanyLogo.filepath)) {
+        await fs.promises.unlink(currentCompanyLogo.filepath);
+      } else {
+        return next(new CustomError(404, "Current image not found"));
+      }
+    } catch (err) {
+      return next(new CustomError(500, "Failed to delete the current image"));
+    }
+  }
   const { filename, path: filepath } = req.file;
-  // Delete the old image file from the file system
-  fs.unlinkSync(currentCompanyLogo.filepath);
 
-  // Save the new image file to the file system
-
-  // Update the banner with new image details
   const updatedCompanyLogo = await CompanyLogo.findByIdAndUpdate(
     id,
     { filename, filepath },
@@ -118,15 +127,22 @@ export const CompanyLogoDelete = asyncErrorHandler(async (req, res, next) => {
 
   if (!companyLogos) {
     return next(
-      new CustomError(404, "Banner not found or not authorized to delete")
+      new CustomError(404, "Company Logo not found or not authorized to delete")
     );
   }
 
-  fs.unlinkSync(companyLogos.filepath);
-
+  try {
+    if (fs.existsSync(companyLogos.filepath)) {
+      await fs.promises.unlink(companyLogos.filepath);
+    } else {
+      return next(new CustomError(404, "Current image not found"));
+    }
+  } catch (err) {
+    return next(new CustomError(500, "Failed to delete the current image"));
+  }
   res.status(200).json({
     code: 200,
     status: "success",
-    message: "Banner deleted successfully",
+    message: "Company Logo deleted successfully",
   });
 });
