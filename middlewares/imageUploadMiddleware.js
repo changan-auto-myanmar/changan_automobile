@@ -9,6 +9,8 @@ const storage = multer.diskStorage({
       uploadPath = "public/banners";
     } else if (req.path.includes("/companies/logo")) {
       uploadPath = "public/companies-logo";
+    } else if (req.path.includes("/partnerships")) {
+      uploadPath = "public/partnerships";
     } else {
       uploadPath = "public/others"; // Default path for other uploads
     }

@@ -13,8 +13,9 @@ import bannerRouter from "./routes/banner.route.js";
 import globalErrorHandler from "./controllers/error.controller.js";
 import authRouter from "./routes/auth.route.js";
 import userRouter from "./routes/user.route.js";
-import setupSwagger from "./configs/swagger.config.js";
 import companyLogoRouter from "./routes/companyLogo.route.js";
+import partnershipRouter from "./routes/partnership.route.js";
+import setupSwagger from "./configs/swagger.config.js";
 
 const app = express();
 app.use(
@@ -61,6 +62,7 @@ app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1", express.static("public/banners"), bannerRouter);
 app.use("/api/v1", companyLogoRouter);
+app.use("/api/v1/", partnershipRouter);
 
 setupSwagger(app);
 //404-Error Handler
