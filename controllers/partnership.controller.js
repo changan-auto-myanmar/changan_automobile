@@ -83,16 +83,19 @@ export const partnershipUpdate = asyncErrorHandler(async (req, res, next) => {
   const { id } = req.params;
   const { domainName } = req.user;
 
-  // Find the banner by ID and domainName
+  // Find the partnership by ID and domainName
   const currentPartnership = await Partnership.findOne({ _id: id, domainName });
   if (!currentPartnership) {
     return next(
       new CustomError(404, "Partnership not found or not authorized to update")
     );
   }
-  if (!req.file) {
-    return next(new CustomError(400, "No image is selected to update"));
-  } else {
+
+  // Initialize an update object
+  let updateData = {};
+
+  // Handle image update if a file is provided
+  if (req.file) {
     try {
       if (fs.existsSync(currentPartnership.filepath)) {
         await fs.promises.unlink(currentPartnership.filepath);
@@ -102,20 +105,27 @@ export const partnershipUpdate = asyncErrorHandler(async (req, res, next) => {
     } catch (err) {
       return next(new CustomError(500, "Failed to delete the current image"));
     }
+
+    const { filename, path: filepath } = req.file;
+    updateData = { ...updateData, filename, filepath };
   }
-  const { filename, path: filepath } = req.file;
 
-  const { url } = req.body;
+  // Handle URL update
+  if (req.body.url) {
+    updateData = { ...updateData, url: req.body.url };
+  }
 
+  // Update the partnership with the new data
   const updatedPartnership = await Partnership.findByIdAndUpdate(
     id,
-    { filename, filepath, url },
+    updateData,
     { new: true }
   );
 
   if (!updatedPartnership) {
     return next(new CustomError(404, "Partnership update failed"));
   }
+
   const { __v, uploadDate, ...rest } = updatedPartnership._doc;
   res.status(200).json({
     code: 200,
