@@ -81,9 +81,21 @@ export const updateBanner = asyncErrorHandler(async (req, res, next) => {
       new CustomError(404, "Banner not found or not authorized to update")
     );
   }
-  const { filename, path: filepath } = req.file;
   // Delete the old image file from the file system
-  fs.unlinkSync(currentBanner.filepath);
+  if (!req.file) {
+    return next(new CustomError(400, "No image is selected to update"));
+  } else {
+    try {
+      if (fs.existsSync(currentBanner.filepath)) {
+        await fs.promises.unlink(currentBanner.filepath);
+      } else {
+        return next(new CustomError(404, "Current image not found"));
+      }
+    } catch (err) {
+      return next(new CustomError(500, "Failed to delete the current image"));
+    }
+  }
+  const { filename, path: filepath } = req.file;
 
   // Save the new image file to the file system
 
@@ -112,15 +124,22 @@ export const bannerDelete = asyncErrorHandler(async (req, res, next) => {
   const { id } = req.params;
   const domainName = req.user.domainName;
 
-  const banner = await Banner.findOneAndDelete({ _id: id, domainName });
+  const banners = await Banner.findOneAndDelete({ _id: id, domainName });
 
-  if (!banner) {
+  if (!banners) {
     return next(
       new CustomError(404, "Banner not found or not authorized to delete")
     );
   }
-
-  fs.unlinkSync(banner.filepath);
+  try {
+    if (fs.existsSync(banners.filepath)) {
+      await fs.promises.unlink(banners.filepath);
+    } else {
+      return next(new CustomError(404, "Current image not found"));
+    }
+  } catch (err) {
+    return next(new CustomError(500, "Failed to delete the current image"));
+  }
 
   res.status(200).json({
     code: 200,
