@@ -13,6 +13,7 @@ import bannerRouter from "./routes/banner.route.js";
 import globalErrorHandler from "./controllers/error.controller.js";
 import authRouter from "./routes/auth.route.js";
 import userRouter from "./routes/user.route.js";
+import csrRouter from "./routes/csr.route.js";
 import companyLogoRouter from "./routes/companyLogo.route.js";
 import partnershipRouter from "./routes/partnership.route.js";
 import setupSwagger from "./configs/swagger.config.js";
@@ -57,12 +58,14 @@ app.use(express.json({ limit: "10kb" }));
 app.use(sanitize());
 app.use(xss());
 app.use(express.json());
+app.use("/api/v1", express.static("public"));
 //Route Mounting
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/users", userRouter);
-app.use("/api/v1", express.static("public/banners"), bannerRouter);
+app.use("/api/v1", bannerRouter);
 app.use("/api/v1", companyLogoRouter);
-app.use("/api/v1/", partnershipRouter);
+app.use("/api/v1", partnershipRouter);
+app.use("/api/v1", csrRouter);
 
 setupSwagger(app);
 //404-Error Handler
