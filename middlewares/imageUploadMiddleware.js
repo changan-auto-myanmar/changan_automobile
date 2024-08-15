@@ -1,10 +1,10 @@
 import multer from "multer";
 import CustomError from "../utils/customError.js";
-// Define storage settings with dynamic destination
-const storage = multer.diskStorage({
+
+// Image storage settings
+const imageStorage = multer.diskStorage({
   destination: function (req, file, cb) {
     let uploadPath;
-    // Determine the upload path based on the API endpoint
     if (req.path.includes("/banners")) {
       uploadPath = "public/banners";
     } else if (req.path.includes("/companies/logo")) {
@@ -14,19 +14,18 @@ const storage = multer.diskStorage({
     } else if (req.path.includes("/csr")) {
       uploadPath = "public/csr";
     } else {
-      uploadPath = "public/others"; // Default path for other uploads
+      uploadPath = "public/others";
     }
 
-    cb(null, uploadPath); // Set the upload path dynamically
+    cb(null, uploadPath);
   },
   filename: function (req, file, cb) {
-    cb(null, Date.now() + "-" + file.originalname); // Rename the uploaded file with a timestamp and its original name
+    cb(null, Date.now() + "-" + file.originalname);
   },
 });
 
-// Define file filter to allow only images
-const fileFilter = function (req, file, cb) {
-  // Allowed file types
+// Image file filter
+const imageFileFilter = function (req, file, cb) {
   const allowedMimeTypes = [
     "image/jpeg",
     "image/png",
@@ -36,27 +35,26 @@ const fileFilter = function (req, file, cb) {
   ];
 
   if (allowedMimeTypes.includes(file.mimetype)) {
-    cb(null, true); // Accept file
+    cb(null, true);
   } else {
     cb(
       new CustomError(400, "Invalid file type. Only images are allowed."),
       false
-    ); // Reject file
+    );
   }
 };
 
-// Configure Multer with storage settings and file filter
-const multerUpload = multer({
-  storage: storage,
-  fileFilter: fileFilter,
+// Image upload middleware
+export const imageUpload = multer({
+  storage: imageStorage,
+  fileFilter: imageFileFilter,
   limits: {
-    fileSize: 3 * 1024 * 1024, // Limit file size to 3MB per file
-    files: 10,
+    fileSize: 3 * 1024 * 1024, // 3MB limit for images
   },
 });
 
-export const single = (req, res, next) => {
-  multerUpload.single("image")(req, res, (error) => {
+export const singleImage = (req, res, next) => {
+  imageUpload.single("image")(req, res, (error) => {
     if (error) {
       return next(error);
     }
@@ -64,13 +62,11 @@ export const single = (req, res, next) => {
   });
 };
 
-export const multi = (req, res, next) => {
-  multerUpload.array("images", 10)(req, res, (error) => {
+export const multiImage = (req, res, next) => {
+  imageUpload.array("images", 10)(req, res, (error) => {
     if (error) {
-      console.log("Error:", error);
       return next(error);
     }
-
     next();
   });
 };
