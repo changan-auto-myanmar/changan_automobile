@@ -13,6 +13,7 @@ import bannerRouter from "./routes/banner.route.js";
 import globalErrorHandler from "./controllers/error.controller.js";
 import authRouter from "./routes/auth.route.js";
 import userRouter from "./routes/user.route.js";
+import videoBannerRouter from "./routes/videoBanner.route.js";
 
 const app = express();
 app.use(helmet());
@@ -48,11 +49,13 @@ app.use(express.json({ limit: "10kb" }));
 app.use(sanitize());
 app.use(xss());
 app.use(express.json());
-app.use("/api/v1", express.static("public"));
+app.use("/api/v1/public", express.static("public"));
+app.use("/api/v1/videos", express.static("videos"));
 //Route Mounting
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1", bannerRouter);
+app.use("/api/v1", videoBannerRouter);
 //404-Error Handler
 app.all("*", (req, res, next) => {
   const err = new CustomError(

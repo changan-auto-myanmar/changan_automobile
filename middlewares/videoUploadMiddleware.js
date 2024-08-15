@@ -5,10 +5,10 @@ import CustomError from "../utils/customError.js";
 const videoStorage = multer.diskStorage({
   destination: function (req, file, cb) {
     let uploadPath;
-    if (req.path.includes("/videos")) {
-      uploadPath = "public/videos";
+    if (req.path.includes("/videos/banners")) {
+      uploadPath = "videos/banners";
     } else {
-      uploadPath = "public/others";
+      uploadPath = "videos/others";
     }
 
     cb(null, uploadPath);
