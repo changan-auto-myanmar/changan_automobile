@@ -51,7 +51,7 @@ app.use("/api/v1", express.static("public"));
 //Route Mounting
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/users", userRouter);
-app.use("/api/v1/", partnershipRouter);
+app.use("/api/v1", partnershipRouter);
 
 //404-Error Handler
 app.all("*", (req, res, next) => {
