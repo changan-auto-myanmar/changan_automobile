@@ -47,7 +47,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json({ limit: "10kb" }));
 app.use(sanitize());
 app.use(xss());
-
+app.use("/api/v1", express.static("public"));
 //Route Mounting
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/users", userRouter);
