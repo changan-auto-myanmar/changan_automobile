@@ -9,6 +9,10 @@ const storage = multer.diskStorage({
       uploadPath = "public/banners";
     } else if (req.path.includes("/companies/logo")) {
       uploadPath = "public/companies-logo";
+    } else if (req.path.includes("/partnerships")) {
+      uploadPath = "public/partnerships";
+    } else if (req.path.includes("/csr")) {
+      uploadPath = "public/csr";
     } else {
       uploadPath = "public/others"; // Default path for other uploads
     }
@@ -23,7 +27,13 @@ const storage = multer.diskStorage({
 // Define file filter to allow only images
 const fileFilter = function (req, file, cb) {
   // Allowed file types
-  const allowedMimeTypes = ["image/jpeg", "image/png", "image/gif"];
+  const allowedMimeTypes = [
+    "image/jpeg",
+    "image/png",
+    "image/gif",
+    "image/webp",
+    "image/svg+xml",
+  ];
 
   if (allowedMimeTypes.includes(file.mimetype)) {
     cb(null, true); // Accept file
@@ -41,15 +51,14 @@ const multerUpload = multer({
   fileFilter: fileFilter,
   limits: {
     fileSize: 3 * 1024 * 1024, // Limit file size to 3MB per file
+    files: 10,
   },
 });
 
 export const single = (req, res, next) => {
   multerUpload.single("image")(req, res, (error) => {
-    if (error instanceof multer.MulterError) {
-      return next(new CustomError(400, error.message));
-    } else if (error) {
-      return next(new CustomError(500, error.message));
+    if (error) {
+      return next(error);
     }
     next();
   });
@@ -57,11 +66,11 @@ export const single = (req, res, next) => {
 
 export const multi = (req, res, next) => {
   multerUpload.array("images", 10)(req, res, (error) => {
-    if (error instanceof multer.MulterError) {
-      return next(new CustomError(400, error.message));
-    } else if (error) {
-      return next(new CustomError(500, error.message));
+    if (error) {
+      console.log("Error:", error);
+      return next(error);
     }
+
     next();
   });
 };
