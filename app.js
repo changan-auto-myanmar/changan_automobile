@@ -13,6 +13,7 @@ import bannerRouter from "./routes/banner.route.js";
 import globalErrorHandler from "./controllers/error.controller.js";
 import authRouter from "./routes/auth.route.js";
 import userRouter from "./routes/user.route.js";
+import testimonialRouter from "./routes/testimonial.route.js";
 import videoBannerRouter from "./routes/videoBanner.route.js";
 import csrRouter from "./routes/csr.route.js";
 import companyLogoRouter from "./routes/companyLogo.route.js";
@@ -69,6 +70,7 @@ app.use("/api/v1", videoBannerRouter);
 app.use("/api/v1", companyLogoRouter);
 app.use("/api/v1", partnershipRouter);
 app.use("/api/v1", csrRouter);
+app.use("/api/v1", testimonialRouter);
 
 setupSwagger(app);
 //404-Error Handler
