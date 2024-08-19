@@ -1,11 +1,19 @@
 openapi: "3.0.0"
 info:
-  title: Your API Title
-  description: Your API Description
+  title: Share CMS
+  description: This Documentation will help for Developer and Tester
   version: "1.0.0"
 tags:
   - name: Auth
     description: Authentication endpoints
+  - name: Banner
+    description: Endpoints for managing banners
+  - name: Video Banner
+    description: Endpoints for managing video banners
+  - name: Company Logo
+    description: Endpoints for managing Company Logo
+  - name: Partnership Logo
+    description: Endpoints for managing Partnership Logo
 
 components:
   securitySchemes:
@@ -325,3 +333,1323 @@ paths:
                   message:
                     type: string
                     example: "Password Doesn't Match"
+  /api/v1/banners:
+    post:
+      summary: "Upload a banner image"
+      description: "This endpoint allows users to upload a banner image. Authentication is required."
+      tags:
+        - Banner
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                image:
+                  type: string
+                  format: binary
+                  description: "The banner image file to be uploaded."
+      responses:
+        201:
+          description: "Banner image uploaded successfully"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 201
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: "Banner Image Uploaded Successfully."
+                  data:
+                    type: object
+                    properties:
+                      banner:
+                        type: object
+                        properties:
+                          filename:
+                            type: string
+                            example: "1723836022549-picture3.jpg"
+                          filepath:
+                            type: string
+                            example: "public/banners/1723836022549-picture3.jpg"
+                          domainName:
+                            type: string
+                            example: "example.com"
+                          _id:
+                            type: string
+                            example: "66bfa676865de3ce66f7c768"
+        400:
+          description: "Invalid input or upload error"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 400
+                  status:
+                    type: string
+                    example: fail
+                  message:
+                    type: string
+                    example: "Error message describing the issue."
+  /api/v1/banners/cms:
+    get:
+      summary: "Retrieve all banners for the CMS"
+      description: "Fetches a list of all banner images stored in the CMS. Requires authentication."
+      tags:
+        - Banner
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: "Successfully retrieved all banners"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 200
+                  status:
+                    type: string
+                    example: success
+                  data:
+                    type: object
+                    properties:
+                      banners:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            _id:
+                              type: string
+                              example: 66bfa676865de3ce66f7c768
+                            filename:
+                              type: string
+                              example: 1723836022549-picture3.jpg
+                            filepath:
+                              type: string
+                              example: public/banners/1723836022549-picture3.jpg
+                            domainName:
+                              type: string
+                              example: example.com
+                            uploadDate:
+                              type: string
+                              format: date-time
+                              example: 2024-08-16T19:20:22.562Z
+                            __v:
+                              type: integer
+                              example: 0
+        401:
+          description: "Unauthorized access, authentication required"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 401
+                  status:
+                    type: string
+                    example: fail
+                  message:
+                    type: string
+                    example: "Authentication required."
+  /api/v1/banners/public:
+    get:
+      summary: "Retrieve public banners"
+      description: "This endpoint allows users to retrieve public banners. No authentication is required."
+      tags:
+        - Banner
+      responses:
+        200:
+          description: "Banners retrieved successfully"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 200
+                  status:
+                    type: string
+                    example: success
+                  data:
+                    type: object
+                    properties:
+                      banners:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            _id:
+                              type: string
+                              example: "66bfa676865de3ce66f7c768"
+                            filename:
+                              type: string
+                              example: "1723836022549-picture3.jpg"
+                            filepath:
+                              type: string
+                              example: "public/banners/1723836022549-picture3.jpg"
+                            domainName:
+                              type: string
+                              example: "example.com"
+                            uploadDate:
+                              type: string
+                              format: date-time
+                              example: "2024-08-16T19:20:22.562Z"
+                            __v:
+                              type: integer
+                              example: 0
+        400:
+          description: "Referer or Origin header is missing"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 400
+                  status:
+                    type: string
+                    example: fail
+                  message:
+                    type: string
+                    example: "Referer or Origin header is missing."
+
+  /api/v1/banners/{id}:
+    patch:
+      summary: "Update banner image"
+      description: "This endpoint allows users to update the banner image. The image should be sent as multipart/form-data. No authentication is required."
+      tags:
+        - Banner
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: "The ID of the banner to update"
+          schema:
+            type: string
+            example: "66bfaa54194c5829b3403452"
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                image:
+                  type: string
+                  format: binary
+                  description: "The image file to be uploaded"
+      responses:
+        200:
+          description: "Banner image updated successfully"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 200
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: "Banner Image updated successfully."
+                  data:
+                    type: object
+                    properties:
+                      updatedBanner:
+                        type: object
+                        properties:
+                          _id:
+                            type: string
+                            example: "66bfaa54194c5829b3403452"
+                          filename:
+                            type: string
+                            example: "1723838242039-picture3.jpg"
+                          filepath:
+                            type: string
+                            example: "public/banners/1723838242039-picture3.jpg"
+                          domainName:
+                            type: string
+                            example: "example.com"
+        404:
+          description: "Banner not found or not authorized to update"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 404
+                  status:
+                    type: string
+                    example: fail
+                  message:
+                    type: string
+                    example: "Banner not found or not authorized to update"
+                    
+    delete:
+      summary: "Delete a banner"
+      description: "This endpoint allows a user to delete a banner by its ID. Requires authentication."
+      tags:
+        - Banner
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: "The ID of the banner to delete"
+          schema:
+            type: string
+            example: "64e912c9ab1234567890abcd"
+      responses:
+        200:
+          description: "Banner deleted successfully"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 200
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: "Banner deleted successfully"
+        401:
+          description: "Authentication error"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 401
+                  status:
+                    type: string
+                    example: fail
+                  message:
+                    type: string
+                    example: "Unauthorized. Authentication required."
+  /api/v1/videos/banners:
+    post:
+      summary: "Upload a banner video"
+      description: "This endpoint allows users to upload a banner video. Authentication is required."
+      tags:
+        - Video Banner
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                image:
+                  type: string
+                  format: binary
+                  description: "The banner video file to be uploaded."
+      responses:
+        201:
+          description: "Banner video uploaded successfully"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 201
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: "Banner Video Uploaded Successfully."
+                  data:
+                    type: object
+                    properties:
+                      videoBanners:
+                        type: object
+                        properties:
+                          filename:
+                            type: string
+                            example: "1723836022549-picture3.mp4"
+                          filepath:
+                            type: string
+                            example: "videos/banners/1723836022549-picture3.mp4"
+                          domainName:
+                            type: string
+                            example: "example.com"
+                          _id:
+                            type: string
+                            example: "66bfa676865de3ce66f7c768"
+        400:
+          description: "Invalid input or upload error"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 400
+                  status:
+                    type: string
+                    example: fail
+                  message:
+                    type: string
+                    example: "Error message describing the issue."
+  /api/v1/videos/banners/cms:
+    get:
+      summary: "Retrieve all banners for the CMS"
+      description: "Fetches a list of all banner video stored in the CMS. Requires authentication."
+      tags:
+        - Video Banner
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: "Successfully retrieved all video banners"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 200
+                  status:
+                    type: string
+                    example: success
+                  data:
+                    type: object
+                    properties:
+                      videoBanners:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            _id:
+                              type: string
+                              example: 66bfa676865de3ce66f7c768
+                            filename:
+                              type: string
+                              example: "1723836022549-picture3.mp4"
+                            filepath:
+                              type: string
+                              example: videos/banners/1723836022549-picture3.mp4
+                            domainName:
+                              type: string
+                              example: example.com
+                            uploadDate:
+                              type: string
+                              format: date-time
+                              example: 2024-08-16T19:20:22.562Z
+                            __v:
+                              type: integer
+                              example: 0
+        401:
+          description: "Unauthorized access, authentication required"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 401
+                  status:
+                    type: string
+                    example: fail
+                  message:
+                    type: string
+                    example: "Authentication required."
+  /api/v1/videos/banners/public:
+    get:
+      summary: "Retrieve public banners"
+      description: "This endpoint allows users to retrieve public banners. No authentication is required."
+      tags:
+        - Video Banner
+      responses:
+        200:
+          description: "Banners retrieved successfully"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 200
+                  status:
+                    type: string
+                    example: success
+                  data:
+                    type: object
+                    properties:
+                      videoBanners:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            _id:
+                              type: string
+                              example: "66bfa676865de3ce66f7c768"
+                            filename:
+                              type: string
+                              example: "1723836022549-picture3.mp4"
+                            filepath:
+                              type: string
+                              example: "public/banners/1723836022549-picture3.mp4"
+                            domainName:
+                              type: string
+                              example: "example.com"
+                            uploadDate:
+                              type: string
+                              format: date-time
+                              example: "2024-08-16T19:20:22.562Z"
+                            __v:
+                              type: integer
+                              example: 0
+        400:
+          description: "Referer or Origin header is missing"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 400
+                  status:
+                    type: string
+                    example: fail
+                  message:
+                    type: string
+                    example: "Referer or Origin header is missing."
+
+  /api/v1/vidoes/banners/{id}:
+    patch:
+      summary: "Update banner image"
+      description: "This endpoint allows users to update the banner video. The video should be sent as multipart/form-data. No authentication is required."
+      tags:
+        - Video Banner
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: "The ID of the banner to update"
+          schema:
+            type: string
+            example: "66bfaa54194c5829b3403452"
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                image:
+                  type: string
+                  format: binary
+                  description: "The video file to be uploaded"
+      responses:
+        200:
+          description: "Banner video updated successfully"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 200
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: "Banner Video updated successfully."
+                  data:
+                    type: object
+                    properties:
+                      updatedVideoBanner:
+                        type: object
+                        properties:
+                          _id:
+                            type: string
+                            example: "66bfaa54194c5829b3403452"
+                          filename:
+                            type: string
+                            example: "1723838242039-picture3.mp4"
+                          filepath:
+                            type: string
+                            example: "videos/banners/1723838242039-picture3.mp4"
+                          domainName:
+                            type: string
+                            example: "example.com"
+        404:
+          description: "Banner not found or not authorized to update"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 404
+                  status:
+                    type: string
+                    example: fail
+                  message:
+                    type: string
+                    example: "Banner not found or not authorized to update"
+                    
+    delete:
+      summary: "Delete a banner"
+      description: "This endpoint allows a user to delete a banner by its ID. Requires authentication."
+      tags:
+        - Video Banner
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: "The ID of the banner to delete"
+          schema:
+            type: string
+            example: "64e912c9ab1234567890abcd"
+      responses:
+        200:
+          description: "Banner deleted successfully"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 200
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: "Banner deleted successfully"
+        401:
+          description: "Authentication error"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 401
+                  status:
+                    type: string
+                    example: fail
+                  message:
+                    type: string
+                    example: "Unauthorized. Authentication required."
+  /api/v1/companies/logo:
+    post:
+      summary: "Upload a Company Logo"
+      description: "This endpoint allows users to upload a Logo. Authentication is required."
+      tags:
+        - Company Logo
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                image:
+                  type: string
+                  format: binary
+                  description: "Company Logo file to be uploaded."
+      responses:
+        201:
+          description: "Company Logo uploaded successfully"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 201
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: "Banner Image Uploaded Successfully."
+                  data:
+                    type: object
+                    properties:
+                      companyLogos:
+                        type: object
+                        properties:
+                          filename:
+                            type: string
+                            example: "1723836022549-picture3.jpg"
+                          filepath:
+                            type: string
+                            example: "public/banners/1723836022549-picture3.jpg"
+                          domainName:
+                            type: string
+                            example: "example.com"
+                          _id:
+                            type: string
+                            example: "66bfa676865de3ce66f7c768"
+        400:
+          description: "Invalid input or upload error"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 400
+                  status:
+                    type: string
+                    example: fail
+                  message:
+                    type: string
+                    example: "Error message describing the issue."
+  /api/v1/companies/logo/cms:
+    get:
+      summary: "Retrieve all Logo for the CMS"
+      description: "Fetches a list of all Logo stored in the CMS. Requires authentication."
+      tags:
+        - Company Logo
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: "Successfully retrieved all Logo"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 200
+                  status:
+                    type: string
+                    example: success
+                  data:
+                    type: object
+                    properties:
+                      companyLogo:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            _id:
+                              type: string
+                              example: 66bfa676865de3ce66f7c768
+                            filename:
+                              type: string
+                              example: 1723836022549-picture3.jpg
+                            filepath:
+                              type: string
+                              example: public/banners/1723836022549-picture3.jpg
+                            domainName:
+                              type: string
+                              example: example.com
+                            uploadDate:
+                              type: string
+                              format: date-time
+                              example: 2024-08-16T19:20:22.562Z
+                            __v:
+                              type: integer
+                              example: 0
+        401:
+          description: "Unauthorized access, authentication required"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 401
+                  status:
+                    type: string
+                    example: fail
+                  message:
+                    type: string
+                    example: "Authentication required."
+  /api/v1/companies/logo/public:
+    get:
+      summary: "Retrieve public Logo"
+      description: "This endpoint allows users to retrieve public Logo. No authentication is required."
+      tags:
+        - Company Logo
+      responses:
+        200:
+          description: "Logo retrieved successfully"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 200
+                  status:
+                    type: string
+                    example: success
+                  data:
+                    type: object
+                    properties:
+                      companyLogo:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            _id:
+                              type: string
+                              example: "66bfa676865de3ce66f7c768"
+                            filename:
+                              type: string
+                              example: "1723836022549-picture3.jpg"
+                            filepath:
+                              type: string
+                              example: "public/banners/1723836022549-picture3.jpg"
+                            domainName:
+                              type: string
+                              example: "example.com"
+                            uploadDate:
+                              type: string
+                              format: date-time
+                              example: "2024-08-16T19:20:22.562Z"
+                            __v:
+                              type: integer
+                              example: 0
+        400:
+          description: "Referer or Origin header is missing"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 400
+                  status:
+                    type: string
+                    example: fail
+                  message:
+                    type: string
+                    example: "Referer or Origin header is missing."
+
+  /api/v1/companies/logo/{id}:
+    patch:
+      summary: "Update company Logo"
+      description: "This endpoint allows users to update the company logo. The image should be sent as multipart/form-data. No authentication is required."
+      tags:
+        - Company Logo
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: "The ID of the Logo to update"
+          schema:
+            type: string
+            example: "66bfaa54194c5829b3403452"
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                image:
+                  type: string
+                  format: binary
+                  description: "The Logo to be uploaded"
+      responses:
+        200:
+          description: "Company Logo updated successfully"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 200
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: "Company Logo updated successfully."
+                  data:
+                    type: object
+                    properties:
+                      updatedCompanyLogo:
+                        type: object
+                        properties:
+                          _id:
+                            type: string
+                            example: "66bfaa54194c5829b3403452"
+                          filename:
+                            type: string
+                            example: "1723838242039-picture3.jpg"
+                          filepath:
+                            type: string
+                            example: "public/banners/1723838242039-picture3.jpg"
+                          domainName:
+                            type: string
+                            example: "example.com"
+        404:
+          description: "Company Logo not found or not authorized to update"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 404
+                  status:
+                    type: string
+                    example: fail
+                  message:
+                    type: string
+                    example: "Company not found or not authorized to update"
+                    
+    delete:
+      summary: "Delete a Company Logo"
+      description: "This endpoint allows a user to delete a company logo by its ID. Requires authentication."
+      tags:
+        - Company Logo
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: "The ID of the Logo to delete"
+          schema:
+            type: string
+            example: "64e912c9ab1234567890abcd"
+      responses:
+        200:
+          description: "Company Logo deleted successfully"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 200
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: "Company Logo deleted successfully"
+        401:
+          description: "Authentication error"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 401
+                  status:
+                    type: string
+                    example: fail
+                  message:
+                    type: string
+                    example: "Unauthorized. Authentication required."
+
+  /api/v1/partnerships:
+    post:
+      summary: "Upload partnership logo"
+      description: "This endpoint allows users to upload a partnership logo along with a URL."
+      tags:
+        - Partnership Logo
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - image
+              properties:
+                image:
+                  type: string
+                  format: binary
+                  description: "The image file to be uploaded"
+                url:
+                  type: string
+                  description: "The URL associated with the partnership"
+                  example: "google.com"
+      responses:
+        200:
+          description: "Partnership uploaded successfully"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 200
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: "Partnership uploaded successfully."
+                  data:
+                    type: object
+                    properties:
+                      partnership:
+                        type: object
+                        properties:
+                          filename:
+                            type: string
+                            example: "1724056694503-picture5.jpg"
+                          filepath:
+                            type: string
+                            example: "public/partnerships/1724056694503-picture5.jpg"
+                          url:
+                            type: string
+                            example: "google.com"
+                          domainName:
+                            type: string
+                            example: "example.com"
+                          _id:
+                            type: string
+                            example: "66c3047677b4dd7200c0c709"
+        400:
+          description: "Bad request due to missing or invalid data"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 400
+                  status:
+                    type: string
+                    example: fail
+                  message:
+                    type: string
+                    example: "Validation error or missing required fields."
+
+  /api/v1/partnerships/public:
+    get:
+      summary: "Retrieve public partnerships"
+      description: "This endpoint retrieves all public partnerships."
+      tags:
+        - Partnership Logo
+      responses:
+        200:
+          description: "Public partnerships retrieved successfully"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 200
+                  status:
+                    type: string
+                    example: success
+                  data:
+                    type: object
+                    properties:
+                      partnerships:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            _id:
+                              type: string
+                              example: "66c3047677b4dd7200c0c709"
+                            filename:
+                              type: string
+                              example: "1724056694503-picture5.jpg"
+                            filepath:
+                              type: string
+                              example: "public/partnerships/1724056694503-picture5.jpg"
+                            url:
+                              type: string
+                              example: "google.com"
+                            domainName:
+                              type: string
+                              example: "example.com"
+                            __v:
+                              type: integer
+                              example: 0
+        400:
+          description: "Bad request due to missing Referer or Origin header"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 400
+                  status:
+                    type: string
+                    example: fail
+                  message:
+                    type: string
+                    example: "Referer or Origin header is missing."
+  /api/v1/partnerships/cms:
+      get:
+        summary: "Retrieve CMS partnerships"
+        description: "This endpoint retrieves all partnerships related to the CMS."
+        tags:
+          - Partnership Logo
+        security:
+          - bearerAuth: []
+        responses:
+          200:
+            description: "CMS partnerships retrieved successfully"
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    code:
+                      type: integer
+                      example: 200
+                    status:
+                      type: string
+                      example: success
+                    data:
+                      type: object
+                      properties:
+                        partnerships:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              _id:
+                                type: string
+                                example: "66c3047677b4dd7200c0c709"
+                              filename:
+                                type: string
+                                example: "1724056694503-picture5.jpg"
+                              filepath:
+                                type: string
+                                example: "public/partnerships/1724056694503-picture5.jpg"
+                              url:
+                                type: string
+                                example: "google.com"
+                              domainName:
+                                type: string
+                                example: "example.com"
+                              __v:
+                                type: integer
+                                example: 0
+          404:
+            description: "No partnership logos found for the domain"
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    code:
+                      type: integer
+                      example: 404
+                    status:
+                      type: string
+                      example: fail
+                    message:
+                      type: string
+                      example: "No partnership logos found for this domain."
+
+  /api/v1/partnerships/{id}:
+    patch:
+      summary: "Update a partnership"
+      description: "This endpoint allows you to update a partnership's image and/or URL. Both fields are optional."
+      tags:
+        - Partnership Logo
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: "ID of the partnership to update"
+          schema:
+            type: string
+            example: "66c3047677b4dd7200c0c709"
+      requestBody:
+        required: false
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                image:
+                  type: string
+                  format: binary
+                  description: "The partnership image file"
+                url:
+                  type: string
+                  description: "The URL associated with the partnership"
+                  example: "facebook.com"
+      responses:
+        200:
+          description: "Partnership updated successfully"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 200
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: "Partnership updated successfully"
+                  data:
+                    type: object
+                    properties:
+                      updatedPartnership:
+                        type: object
+                        properties:
+                          _id:
+                            type: string
+                            example: "66c3047677b4dd7200c0c709"
+                          filename:
+                            type: string
+                            example: "1724057839161-picture3.jpg"
+                          filepath:
+                            type: string
+                            example: "public/partnerships/1724057839161-picture3.jpg"
+                          url:
+                            type: string
+                            example: "facebook.com"
+                          domainName:
+                            type: string
+                            example: "example.com"
+        404:
+          description: "Partnership not found or not authorized to update"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 404
+                  status:
+                    type: string
+                    example: fail
+                  message:
+                    type: string
+                    example: "Partnership not found or not authorized to update"
+
+    delete:
+      summary: "Delete a partnership"
+      description: "This endpoint allows you to delete a partnership by its ID."
+      tags:
+        - Partnership Logo
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: "ID of the partnership to delete"
+          schema:
+            type: string
+            example: "66c3047677b4dd7200c0c709"
+      responses:
+        200:
+          description: "Partnership deleted successfully"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 200
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: "Partnership deleted successfully"
+        404:
+          description: "Partnership not found or not authorized to delete"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 404
+                  status:
+                    type: string
+                    example: fail
+                  message:
+                    type: string
+                    example: "Partnership not found or not authorized to delete"
