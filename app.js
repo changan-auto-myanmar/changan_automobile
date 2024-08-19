@@ -12,6 +12,7 @@ import CustomError from "./utils/customError.js";
 import globalErrorHandler from "./controllers/error.controller.js";
 import authRouter from "./routes/auth.route.js";
 import userRouter from "./routes/user.route.js";
+import testimonialRouter from "./routes/testimonial.route.js";
 
 const app = express();
 app.use(helmet());
@@ -50,6 +51,7 @@ app.use(xss());
 //Route Mounting
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/users", userRouter);
+app.use("/api/v1", testimonialRouter);
 
 //404-Error Handler
 app.all("*", (req, res, next) => {
