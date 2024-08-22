@@ -22,6 +22,20 @@ const csrSchema = new Schema({
       filepath: { type: String, required: true },
     },
   ],
+
+  //ISO 8601 format,YYYY-MM-DDTHH:MM:SSZ
+
+  eventDate: {
+    type: Date,
+    validate: {
+      validator: function (value) {
+        // If the category is 'News', eventDate should be null or undefined
+        return !(this.category === "News" && value);
+      },
+      message: "eventDate should not be provided when category is 'News'.",
+    },
+  },
+
   createdAt: {
     type: Date,
     default: Date.now,
