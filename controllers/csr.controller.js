@@ -14,13 +14,25 @@ export const csrUpload = asyncErrorHandler(async (req, res, next) => {
   }));
 
   const domainName = req.user.domainName;
-  const { textBody, category } = req.body;
+  const { textBody, category, eventDate } = req.body;
 
+  // Check if category is "News" and eventDate is provided
+  if (category === "News" && eventDate) {
+    return next(
+      new CustomError(
+        400,
+        "eventDate should not be provided when the category is 'News'."
+      )
+    );
+  }
+
+  // Prepare the CSR object, including eventDate only if it's not News
   const newCSR = new CSR({
     images,
     domainName,
     textBody,
     category,
+    eventDate: category !== "News" ? eventDate : undefined, // Add eventDate only if not News
   });
 
   const savedCSR = await newCSR.save();
@@ -182,8 +194,18 @@ export const csrUpdate = asyncErrorHandler(async (req, res, next) => {
   if (req.body.textBody) {
     csr.textBody = req.body.textBody;
   }
+
   if (req.body.category) {
     csr.category = req.body.category;
+
+    // Remove eventDate if the new category is "News"
+    if (req.body.category === "News" && csr.eventDate) {
+      csr.eventDate = undefined;
+    }
+  }
+
+  if (req.body.eventDate && csr.category !== "News") {
+    csr.eventDate = req.body.eventDate;
   }
 
   // Save the updated CSR
