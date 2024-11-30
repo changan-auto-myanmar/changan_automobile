@@ -13,6 +13,7 @@ import bannerRouter from "./routes/banner.route.js";
 import globalErrorHandler from "./controllers/error.controller.js";
 import authRouter from "./routes/auth.route.js";
 import userRouter from "./routes/user.route.js";
+import serviceMailBoxRouter from "./routes/serviceMailBox.route.js";
 import contactMailboxRouter from "./routes/contactMailBox.route.js";
 import testimonialRouter from "./routes/testimonial.route.js";
 import videoBannerRouter from "./routes/videoBanner.route.js";
@@ -66,6 +67,7 @@ app.use("/api/v1/videos", express.static("videos"));
 //Route Mounting
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/users", userRouter);
+app.use("/api/v1/service", serviceMailBoxRouter);
 app.use("/api/v1", bannerRouter);
 app.use("/api/v1", videoBannerRouter);
 app.use("/api/v1", companyLogoRouter);
