@@ -16,11 +16,11 @@ export const addVideo = asyncErrorHandler(async (req, res, next) => {
   }
 
   const videoCount = await youtubeVideo.countDocuments();
-  if (videoCount >= 5) {
+  if (videoCount >= 4) {
     return next(
       new CustomError(
         400,
-        "Video limit reached. You can only add up to 5 videos."
+        "Video limit reached. You can only add up to 4 videos."
       )
     );
   }
@@ -45,5 +45,67 @@ export const getAllVideos = asyncErrorHandler(async (req, res, next) => {
     data: {
       video_id: videos,
     },
+  });
+});
+
+export const getVideoById = asyncErrorHandler(async (req, res, next) => {
+  const { id } = req.params;
+
+  const video = await youtubeVideo.findById(id);
+
+  if (!video) {
+    return next(new CustomError(404, "Video does not exist."));
+  }
+
+  res.status(200).json({
+    code: 200,
+    status: "success",
+    message: "YouTube video retrieved successfully.",
+    data: video,
+  });
+});
+
+export const deleteVideoById = asyncErrorHandler(async (req, res, next) => {
+  const { id } = req.params;
+  const video = await youtubeVideo.findByIdAndDelete(id);
+
+  if (!video) {
+    return next(new CustomError(404, "Video not found."));
+  }
+
+  res.status(200).json({
+    code: 200,
+    status: "success",
+    message: "YouTube video deleted successfully.",
+    data: video,
+  });
+});
+
+export const updateVideoById = asyncErrorHandler(async (req, res) => {
+  const { id } = req.params;
+  const { url } = req.body;
+
+  if (!url) {
+    return res.status(400).json({ message: "YouTube URL is required." });
+  }
+
+  const video_id = extractYouTubeId(url);
+  if (!video_id) {
+    return res.status(400).json({ message: "Invalid YouTube URL." });
+  }
+
+  const video = await youtubeVideo.findByIdAndUpdate(
+    id,
+    { video_id },
+    { new: true }
+  );
+
+  if (!video) {
+    return res.status(404).json({ message: "Video not found." });
+  }
+
+  res.status(200).json({
+    message: "YouTube video updated successfully.",
+    data: video,
   });
 });
