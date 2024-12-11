@@ -7,23 +7,22 @@ const csrSchema = new Schema({
     type: String,
     required: true,
   },
-  textBody: {
-    type: String,
-    required: true,
-  },
+
   category: {
     type: String,
     enum: ["Events", "Promotions", "News"],
     required: true,
   },
-  images: [
-    {
-      filename: { type: String, required: true },
-      filepath: { type: String, required: true },
-    },
-  ],
 
-  //ISO 8601 format,YYYY-MM-DDTHH:MM:SSZ
+  title: {
+    type: String,
+    required: true,
+  },
+
+  image: {
+    filename: { type: String, required: true },
+    filepath: { type: String, required: true },
+  },
 
   eventDate: {
     type: Date,
@@ -34,6 +33,16 @@ const csrSchema = new Schema({
       },
       message: "eventDate should not be provided when category is 'News'.",
     },
+  },
+
+  sub_title: {
+    type: String,
+    required: true,
+  },
+
+  body: {
+    type: String,
+    required: true,
   },
 
   createdAt: {
