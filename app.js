@@ -12,6 +12,7 @@ import CustomError from "./utils/customError.js";
 import globalErrorHandler from "./controllers/error.controller.js";
 import authRouter from "./routes/auth.route.js";
 import userRouter from "./routes/user.route.js";
+import changanShowcaseRouter from "./routes/changanShowcase.route.js";
 
 const app = express();
 app.use(helmet());
@@ -46,10 +47,13 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json({ limit: "10kb" }));
 app.use(sanitize());
 app.use(xss());
+app.use("/api/v1/public", express.static("public"));
+app.use("/api/v1/videos", express.static("videos"));
 
 //Route Mounting
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/users", userRouter);
+app.use("/api/v1", changanShowcaseRouter);
 
 //404-Error Handler
 app.all("*", (req, res, next) => {
