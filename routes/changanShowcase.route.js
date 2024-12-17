@@ -4,6 +4,7 @@ import {
   getAllShowcases,
   getShowcaseById,
   deleteShowcase,
+  updateShowcase,
 } from "../controllers/changanShowcase.controller.js";
 import { dynamicFieldsUpload } from "../middlewares/dynamicFilesFeildsMiddleware.js";
 
