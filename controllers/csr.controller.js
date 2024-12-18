@@ -13,8 +13,18 @@ export const csrUpload = asyncErrorHandler(async (req, res, next) => {
   const domainName = req.user.domainName;
   const { category, title, sub_title, body, eventDate } = req.body;
 
-  if ((!category || !title || !body, sub_title)) {
-    return next(new CustomError(400, "Please fill all the required fields."));
+  const requiredFields = { category, title, sub_title, body };
+  const missingFields = Object.entries(requiredFields)
+    .filter(([_, value]) => !value)
+    .map(([key]) => key);
+
+  if (missingFields.length > 0) {
+    return next(
+      new CustomError(
+        400,
+        `Please fill all the required fields: ${missingFields.join(", ")}`
+      )
+    );
   }
 
   // Check if category is "News" and eventDate is provided
