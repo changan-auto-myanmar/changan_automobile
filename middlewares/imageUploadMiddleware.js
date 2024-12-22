@@ -66,11 +66,31 @@ export const singleImage = (req, res, next) => {
 };
 
 export const multiImage = (req, res, next) => {
+  console.log("Middleware: Start of image upload process.");
+
+  // Use imageUpload.array() to handle multiple file uploads with the 'images' field
   imageUpload.array("images", 10)(req, res, (error) => {
     if (error) {
-      return next(error);
+      console.log("Multer error:", error); // Log Multer error if any
+
+      // Check for Multer-specific errors and handle them
+      if (error.code === "LIMIT_UNEXPECTED_FILE") {
+        console.log("Unexpected field or incorrect field name."); // Log specific error
+        return next(
+          new CustomError(400, "Unexpected field or incorrect field name")
+        );
+      } else if (error.code === "LIMIT_FILE_COUNT") {
+        console.log("Maximum file count exceeded. Only 10 images allowed."); // Log specific error
+        return next(
+          new CustomError(400, "You can upload a maximum of 10 images")
+        );
+      } else {
+        return next(error); // Pass other errors to the next error handler
+      }
     }
 
+    console.log("Middleware: Successfully uploaded files:", req.files); // Log the uploaded files
+    // Proceed to the next middleware if there are no errors
     next();
   });
 };
