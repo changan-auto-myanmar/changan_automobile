@@ -4,26 +4,18 @@ import asyncErrorHandler from "../utils/asyncErrorHandler.js";
 import fs from "fs";
 
 export const csrUpload = asyncErrorHandler(async (req, res, next) => {
-  if (!req.file || req.file.length === 0) {
-    return next(new CustomError(400, "There is no image to upload"));
+  // Check if files are provided
+  if (!req.files || req.files.length === 0) {
+    return next(new CustomError(400, "There are no images to upload"));
   }
 
-  const { filename, path: filepath } = req.file;
-
+  const { category, title, body, eventDate } = req.body;
   const domainName = req.user.domainName;
-  const { category, title, sub_title, body, eventDate } = req.body;
 
-  const requiredFields = { category, title, sub_title, body };
-  const missingFields = Object.entries(requiredFields)
-    .filter(([_, value]) => !value)
-    .map(([key]) => key);
-
-  if (missingFields.length > 0) {
+  // Check for missing required fields
+  if (!category || !title || !body) {
     return next(
-      new CustomError(
-        400,
-        `Please fill all the required fields: ${missingFields.join(", ")}`
-      )
+      new CustomError(400, "Missing required fields: category, title, or body")
     );
   }
 
@@ -32,87 +24,94 @@ export const csrUpload = asyncErrorHandler(async (req, res, next) => {
     return next(
       new CustomError(
         400,
-        "eventDate should not be provided when the category is 'News'."
+        "eventDate should not be provided when the category is 'News'"
       )
     );
   }
 
-  // Prepare the CSR object, including eventDate only if it's not News
+  // Prepare the CSR object
+  const images = req.files.map((file) => ({
+    filename: file.filename,
+    filepath: file.path,
+  }));
+
   const newCSR = new CSR({
-    image: {
-      filename,
-      filepath,
-    },
+    images,
     domainName,
     category,
-    sub_title,
-    body,
     title,
-    eventDate: category !== "News" ? eventDate : undefined, // Add eventDate only if not News
+    body,
+    eventDate: category !== "News" ? eventDate : undefined,
   });
 
-  const savedCSR = await newCSR.save();
-  const { __v, ...rest } = savedCSR._doc;
+  // Save to the database
+  newCSR
+    .save()
+    .then((savedCSR) => {
+      const { __v, ...rest } = savedCSR._doc;
+      res.status(200).json({
+        code: 200,
+        status: "success",
+        message: "CSR created successfully.",
+        data: { CSR: rest },
+      });
+    })
+    .catch(async () => {
+      // Delete files if database save fails
+      await Promise.all(req.files.map((file) => fs.unlink(file.path)));
+      next(new CustomError(500, "Failed to save CSR"));
+    });
+});
+
+export const csrAdditionalUpload = asyncErrorHandler(async (req, res, next) => {
+  const { id } = req.params;
+
+  // Check if files are provided
+  if (!req.files || req.files.length === 0) {
+    return next(new CustomError(400, "No images to upload"));
+  }
+
+  // Check if the number of files exceeds the limit
+  if (req.files.length > 10) {
+    return next(
+      new CustomError(400, "You can only upload a maximum of 10 images")
+    );
+  }
+
+  // Find the CSR by ID
+  const csr = await CSR.findById(id);
+  if (!csr) {
+    return next(new CustomError(404, "CSR not found"));
+  }
+
+  // Check if the total number of images exceeds the limit
+  const totalImages = csr.images.length + req.files.length;
+  if (totalImages > 10) {
+    return next(
+      new CustomError(400, "The total number of images exceeds the limit of 10")
+    );
+  }
+
+  // Add new images to the CSR
+  const newImages = req.files.map((file) => ({
+    filename: file.filename,
+    filepath: file.path,
+  }));
+
+  csr.images.push(...newImages);
+  await csr.save();
+  const { __v, ...rest } = csr._doc;
 
   res.status(200).json({
     code: 200,
     status: "success",
-    message: "CSR created successfully.",
+    message: "Images added successfully.",
     data: {
-      CSR: rest,
+      count: rest.images.length,
+      CSR: rest, // Updated to return the updated CSR
     },
   });
 });
-
-// export const csrAdditionalUpload = asyncErrorHandler(async (req, res, next) => {
-//   const { id } = req.params;
-
-//   // Check if files are provided
-//   if (!req.files || req.files.length === 0) {
-//     return next(new CustomError(400, "No images to upload"));
-//   }
-
-//   // Check if the number of files exceeds the limit
-//   if (req.files.length > 10) {
-//     return next(
-//       new CustomError(400, "You can only upload a maximum of 10 images")
-//     );
-//   }
-
-//   // Find the CSR by ID
-//   const csr = await CSR.findById(id);
-//   if (!csr) {
-//     return next(new CustomError(404, "CSR not found"));
-//   }
-
-//   // Check if the total number of images exceeds the limit
-//   const totalImages = csr.images.length + req.files.length;
-//   if (totalImages > 10) {
-//     return next(
-//       new CustomError(400, "The total number of images exceeds the limit of 10")
-//     );
-//   }
-
-//   // Add new images to the CSR
-//   const newImages = req.files.map((file) => ({
-//     filename: file.filename,
-//     filepath: file.path,
-//   }));
-
-//   csr.images.push(...newImages);
-//   await csr.save();
-//   const { __v, ...rest } = csr._doc;
-
-//   res.status(200).json({
-//     code: 200,
-//     status: "success",
-//     message: "Images added successfully.",
-//     data: {
-//       count: rest.images.length,
-//       CSR: rest, // Updated to return the updated CSR
-//     },
-//   });
-// });
 
 export const csrPublic = asyncErrorHandler(async (req, res, next) => {
   const { domainName } = req;
@@ -147,12 +146,11 @@ export const csrCms = asyncErrorHandler(async (req, res, next) => {
     );
   }
 
-  // Fetch banners for the domain
   const csrs = await CSR.find({ domainName });
 
-  if (csrs.length === 0) {
-    return next(new CustomError(404, "No CSRs found for this domain."));
-  }
+  // if (csrs.length === 0) {
+  //   return next(new CustomError(404, "No CSRs found for this domain."));
+  // }
 
   res.status(200).json({
     code: 200,
@@ -169,43 +167,71 @@ export const csrCms = asyncErrorHandler(async (req, res, next) => {
 export const csrUpdate = asyncErrorHandler(async (req, res, next) => {
   const { id } = req.params;
   const { domainName } = req.user;
+  const { category, title, body, eventDate, imageIds } = req.body;
 
   const csr = await CSR.findOne({ _id: id, domainName });
   if (!csr) {
     return next(
-      new CustomError(404, "CSR not found or not authorized to update")
+      new CustomError(404, "CSR not found or not authorized to update.")
     );
   }
 
-  if (req.file) {
-    const { filename, path: filepath } = req.file;
+  const parsedImageIds = imageIds ? JSON.parse(imageIds) : [];
+  const files = req.files || [];
 
-    if (csr.image?.filepath && fs.existsSync(csr.image.filepath)) {
-      try {
-        await fs.promises.unlink(csr.image.filepath);
-      } catch (err) {
-        return next(new CustomError(500, "Failed to delete the current image"));
+  if (
+    parsedImageIds.length > 0 &&
+    files.length > 0 &&
+    parsedImageIds.length !== files.length
+  ) {
+    return next(
+      new CustomError(400, "Mismatched imageIds and files array lengths.")
+    );
+  }
+
+  if (parsedImageIds.length > 0) {
+    for (let i = 0; i < parsedImageIds.length; i++) {
+      const imageId = parsedImageIds[i];
+      const newFile = files[i];
+
+      console.log(`Processing Image ID: ${imageId}, New File:`, newFile);
+
+      const imageIndex = csr.images.findIndex(
+        (img) => img._id.toString() === imageId
+      );
+      if (imageIndex === -1) {
+        return next(
+          new CustomError(404, `Image with ID ${imageId} not found.`)
+        );
       }
+
+      const oldFilePath = csr.images[imageIndex].filepath;
+      console.log(`Deleting old file at: ${oldFilePath}`);
+      if (fs.existsSync(oldFilePath)) {
+        await fs.promises.unlink(oldFilePath);
+      }
+
+      csr.images[imageIndex] = {
+        filename: newFile.filename,
+        filepath: newFile.path,
+      };
     }
-
-    csr.image = { filename, filepath };
   }
 
-  if (req.body.textBody) {
-    csr.textBody = req.body.textBody;
-  }
+  if (title) csr.title = title;
+  if (body) csr.body = body;
 
-  if (req.body.category) {
-    csr.category = req.body.category;
+  if (category) {
+    csr.category = category;
 
-    if (req.body.category === "News" && csr.eventDate) {
+    if (category === "News" && csr.eventDate) {
       csr.eventDate = undefined;
     }
   }
 
-  if (req.body.eventDate) {
+  if (eventDate) {
     if (csr.category !== "News") {
-      csr.eventDate = req.body.eventDate;
+      csr.eventDate = eventDate;
     } else {
       return next(
         new CustomError(
@@ -217,12 +243,11 @@ export const csrUpdate = asyncErrorHandler(async (req, res, next) => {
   }
 
   const updatedCSR = await csr.save();
-  const { __v, ...rest } = updatedCSR._doc;
 
   res.status(200).json({
-    code: 200,
     status: "success",
     message: "CSR updated successfully.",
+    data: updatedCSR,
   });
 });
 
@@ -238,14 +263,22 @@ export const csrDelete = asyncErrorHandler(async (req, res, next) => {
     );
   }
 
-  // Remove the associated image file from the filesystem if it exists
-  if (csr.image?.filepath && fs.existsSync(csr.image.filepath)) {
-    try {
-      await fs.promises.unlink(csr.image.filepath);
-    } catch (err) {
-      return next(
-        new CustomError(500, "Failed to delete the associated image file")
-      );
+  // If image array exists, remove the associated image files from the filesystem
+  if (csr.images && csr.images.length > 0) {
+    for (const image of csr.images) {
+      const imagePath = image.filepath;
+      if (imagePath && fs.existsSync(imagePath)) {
+        // Synchronously check if the file exists
+        try {
+          fs.unlinkSync(imagePath); // Synchronously delete the image file
+          console.log(`Deleted image file: ${imagePath}`);
+        } catch (err) {
+          console.error(`Failed to delete image file at: ${imagePath}`);
+          return next(
+            new CustomError(500, "Failed to delete the associated image file")
+          );
+        }
+      }
     }
   }
 
@@ -259,49 +292,49 @@ export const csrDelete = asyncErrorHandler(async (req, res, next) => {
   });
 });
 
-// export const csrImageDelete = asyncErrorHandler(async (req, res, next) => {
-//   const { id, imageId } = req.params;
-//   const { domainName } = req.user;
+export const csrImageDelete = asyncErrorHandler(async (req, res, next) => {
+  const { id, imageId } = req.params;
+  const { domainName } = req.user;
 
-//   // Find the CSR by ID and domainName
-//   const csr = await CSR.findOne({ _id: id, domainName });
-//   if (!csr) {
-//     return next(
-//       new CustomError(404, "CSR not found or not authorized to update")
-//     );
-//   }
+  // Find the CSR by ID and domainName
+  const csr = await CSR.findOne({ _id: id, domainName });
+  if (!csr) {
+    return next(
+      new CustomError(404, "CSR not found or not authorized to update")
+    );
+  }
 
-//   // Find the image to be deleted
-//   const imageIndex = csr.images.findIndex(
-//     (img) => img._id.toString() === imageId
-//   );
-//   if (imageIndex === -1) {
-//     return next(new CustomError(404, "Image not found"));
-//   }
+  // Find the image to be deleted
+  const imageIndex = csr.images.findIndex(
+    (img) => img._id.toString() === imageId
+  );
+  if (imageIndex === -1) {
+    return next(new CustomError(404, "Image not found"));
+  }
 
-//   // Remove the old image file from the filesystem if it exists
-//   const oldImage = csr.images[imageIndex];
-//   if (oldImage.filepath && fs.existsSync(oldImage.filepath)) {
-//     try {
-//       await fs.promises.unlink(oldImage.filepath);
-//     } catch (err) {
-//       return next(new CustomError(500, "Failed to delete the current image"));
-//     }
-//   }
+  // Remove the old image file from the filesystem if it exists
+  const oldImage = csr.images[imageIndex];
+  if (oldImage.filepath && fs.existsSync(oldImage.filepath)) {
+    try {
+      await fs.promises.unlink(oldImage.filepath);
+    } catch (err) {
+      return next(new CustomError(500, "Failed to delete the current image"));
+    }
+  }
 
-//   // Remove the image from the CSR's images array
-//   csr.images.splice(imageIndex, 1);
-//   await csr.save();
+  // Remove the image from the CSR's images array
+  csr.images.splice(imageIndex, 1);
+  await csr.save();
 
-//   res.status(200).json({
-//     code: 200,
-//     status: "success",
-//     message: "Image deleted successfully.",
-//     data: {
-//       CSR: csr,
-//     },
-//   });
-// });
+  res.status(200).json({
+    code: 200,
+    status: "success",
+    message: "Image deleted successfully.",
+    data: {
+      CSR: csr,
+    },
+  });
+});
 
 // export const csrDocDelete = asyncErrorHandler(async (req, res, next) => {
 //   const { id } = req.params;
