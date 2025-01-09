@@ -15,6 +15,8 @@ const imageStorage = multer.diskStorage({
       uploadPath = "public/csr";
     } else if (req.path.includes("/testimonials")) {
       uploadPath = "public/testimonials";
+    } else if (req.path.includes("/car-overview")) {
+      uploadPath = "public/car-overview";
     } else {
       uploadPath = "public/others";
     }

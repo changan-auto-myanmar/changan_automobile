@@ -23,6 +23,7 @@ import csrRouter from "./routes/csr.route.js";
 import companyLogoRouter from "./routes/companyLogo.route.js";
 import partnershipRouter from "./routes/partnership.route.js";
 import setupSwagger from "./configs/swagger.config.js";
+import carBrandOverviewRouter from "./routes/brandOverview.route.js";
 
 const app = express();
 app.use(
@@ -69,6 +70,7 @@ app.use(express.json());
 //Route Mounting
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/users", userRouter);
+app.use("/api/v1", carBrandOverviewRouter);
 app.use("/api/v1", changanShowcaseRouter);
 app.use("/api/v1/youtube", youtubeRouter);
 app.use("/api/v1/service", serviceMailBoxRouter);
