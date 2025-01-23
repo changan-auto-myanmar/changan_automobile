@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 const { Schema } = mongoose;
 
 const csrSchema = new Schema({
-  domainName: { type: String, required: true, trim: true, index: true },
+  // domainName: { type: String, required: true, trim: true, index: true },
 
   category: {
     type: String,
