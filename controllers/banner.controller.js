@@ -9,8 +9,9 @@ export const bannerUpload = asyncErrorHandler(async (req, res, next) => {
     return next(new CustomError(400, "No Image to upload"));
   }
   const { filename, path: filepath } = req.file;
-  const domainName = req.user.domainName;
-  const newBanner = new Banner({ filename, filepath, domainName });
+  // const domainName = req.user.domainName;
+  // const newBanner = new Banner({ filename, filepath, domainName });
+  const newBanner = new Banner({ filename, filepath });
   const savedBanner = await newBanner.save();
   const { __v, uploadDate, ...rest } = savedBanner._doc;
   res.status(201).json({
@@ -23,43 +24,46 @@ export const bannerUpload = asyncErrorHandler(async (req, res, next) => {
   });
 });
 
+// export const publicBanner = asyncErrorHandler(async (req, res, next) => {
+//   const { domainName } = req;
+
+//   if (!domainName) {
+//     return next(new CustomError(400, "Domain name not found."));
+//   }
+
+//   const banners = await Banner.find({});
+
+//   res.status(200).json({
+//     code: 200,
+//     status: "success",
+//     data: {
+//       banners,
+//     },
+//   });
+// });
+
+// export const cmsBanner = asyncErrorHandler(async (req, res, next) => {
+//   const domainName = req.user.domainName;
+
+//   if (!domainName) {
+//     return next(
+//       new CustomError(400, "Domain name not found for the authenticated user.")
+//     );
+//   }
+
+//   const banners = await Banner.find({ domainName });
+
+//   res.status(200).json({
+//     code: 200,
+//     status: "success",
+//     data: {
+//       banners,
+//     },
+//   });
+// });
+
 export const publicBanner = asyncErrorHandler(async (req, res, next) => {
-  const { domainName } = req;
-
-  if (!domainName) {
-    return next(new CustomError(400, "Domain name not found."));
-  }
-  const banners = await Banner.find({ domainName });
-
-  if (banners.length === 0) {
-    return next(new CustomError(404, "No banners found for this domain."));
-  }
-
-  res.status(200).json({
-    code: 200,
-    status: "success",
-    data: {
-      banners,
-    },
-  });
-});
-
-export const cmsBanner = asyncErrorHandler(async (req, res, next) => {
-  // Access domainName from the authenticated user's data
-  const domainName = req.user.domainName;
-
-  if (!domainName) {
-    return next(
-      new CustomError(400, "Domain name not found for the authenticated user.")
-    );
-  }
-
-  // Fetch banners for the domain
-  const banners = await Banner.find({ domainName });
-
-  if (banners.length === 0) {
-    return next(new CustomError(404, "No banners found for this domain."));
-  }
+  const banners = await Banner.find({});
 
   res.status(200).json({
     code: 200,
@@ -72,10 +76,8 @@ export const cmsBanner = asyncErrorHandler(async (req, res, next) => {
 
 export const updateBanner = asyncErrorHandler(async (req, res, next) => {
   const { id } = req.params;
-  const { domainName } = req.user;
 
-  // Find the banner by ID and domainName
-  const currentBanner = await Banner.findOne({ _id: id, domainName });
+  const currentBanner = await Banner.findOne({ _id: id });
   if (!currentBanner) {
     return next(
       new CustomError(404, "Banner not found or not authorized to update")
@@ -97,9 +99,6 @@ export const updateBanner = asyncErrorHandler(async (req, res, next) => {
   }
   const { filename, path: filepath } = req.file;
 
-  // Save the new image file to the file system
-
-  // Update the banner with new image details
   const updatedBanner = await Banner.findByIdAndUpdate(
     id,
     { filename, filepath },
@@ -122,9 +121,8 @@ export const updateBanner = asyncErrorHandler(async (req, res, next) => {
 
 export const bannerDelete = asyncErrorHandler(async (req, res, next) => {
   const { id } = req.params;
-  const domainName = req.user.domainName;
 
-  const banners = await Banner.findOneAndDelete({ _id: id, domainName });
+  const banners = await Banner.findOneAndDelete({ _id: id });
 
   if (!banners) {
     return next(

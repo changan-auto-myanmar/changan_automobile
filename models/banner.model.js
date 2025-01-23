@@ -14,11 +14,11 @@ const bannerSchema = new Schema({
     type: Date,
     default: Date.now,
   },
-  domainName: {
-    type: String,
-    required: true,
-  },
+  // domainName: {
+  //   type: String,
+  //   required: true,
+  // },
 });
 
-const Banner = mongoose.model("banner", bannerSchema);
+const Banner = mongoose.model("Banner", bannerSchema);
 export default Banner;
