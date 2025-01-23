@@ -10,7 +10,7 @@ export const csrUpload = asyncErrorHandler(async (req, res, next) => {
   }
 
   const { category, title, body, eventDate } = req.body;
-  const domainName = req.user.domainName;
+  // const domainName = req.user.domainName;
 
   // Check for missing required fields
   if (!category || !title || !body) {
@@ -37,7 +37,7 @@ export const csrUpload = asyncErrorHandler(async (req, res, next) => {
 
   const newCSR = new CSR({
     images,
-    domainName,
+    // domainName,
     category,
     title,
     body,
@@ -113,17 +113,58 @@ export const csrAdditionalUpload = asyncErrorHandler(async (req, res, next) => {
   });
 });
 
+// export const csrPublic = asyncErrorHandler(async (req, res, next) => {
+//   const { domainName } = req;
+
+//   if (!domainName) {
+//     return next(new CustomError(400, "Domain name not found."));
+//   }
+//   const csrs = await CSR.find({ domainName });
+
+//   if (csrs.length === 0) {
+//     return next(new CustomError(404, "No CSRs found for this domain."));
+//   }
+
+//   res.status(200).json({
+//     code: 200,
+//     status: "success",
+//     data: {
+//       CSR: csrs.map((csr) => ({
+//         ...csr.toObject(),
+//         count: csr.images.length,
+//       })),
+//     },
+//   });
+// });
+
+// export const getCsrPublicById = asyncErrorHandler(async (req, res, next) => {
+//   const { domainName } = req;
+//   const { id } = req.params;
+
+//   if (!domainName) {
+//     return next(new CustomError(400, "Domain name not found."));
+//   }
+
+//   const csr = await CSR.findOne({ _id: id, domainName });
+
+//   if (!csr) {
+//     return next(new CustomError(404, "CSR not found for this domain."));
+//   }
+
+//   res.status(200).json({
+//     code: 200,
+//     status: "success",
+//     data: {
+//       CSR: {
+//         ...csr.toObject(),
+//         count: csr.images.length,
+//       },
+//     },
+//   });
+// });
+
 export const csrPublic = asyncErrorHandler(async (req, res, next) => {
-  const { domainName } = req;
-
-  if (!domainName) {
-    return next(new CustomError(400, "Domain name not found."));
-  }
-  const csrs = await CSR.find({ domainName });
-
-  if (csrs.length === 0) {
-    return next(new CustomError(404, "No CSRs found for this domain."));
-  }
+  const csrs = await CSR.find({});
 
   res.status(200).json({
     code: 200,
@@ -138,14 +179,9 @@ export const csrPublic = asyncErrorHandler(async (req, res, next) => {
 });
 
 export const getCsrPublicById = asyncErrorHandler(async (req, res, next) => {
-  const { domainName } = req;
   const { id } = req.params;
 
-  if (!domainName) {
-    return next(new CustomError(400, "Domain name not found."));
-  }
-
-  const csr = await CSR.findOne({ _id: id, domainName });
+  const csr = await CSR.findOne({ _id: id });
 
   if (!csr) {
     return next(new CustomError(404, "CSR not found for this domain."));
@@ -163,73 +199,72 @@ export const getCsrPublicById = asyncErrorHandler(async (req, res, next) => {
   });
 });
 
-export const csrCms = asyncErrorHandler(async (req, res, next) => {
-  const domainName = req.user.domainName;
+// export const csrCms = asyncErrorHandler(async (req, res, next) => {
+//   const domainName = req.user.domainName;
 
-  if (!domainName) {
-    return next(
-      new CustomError(400, "Domain name not found for the authenticated user.")
-    );
-  }
+//   if (!domainName) {
+//     return next(
+//       new CustomError(400, "Domain name not found for the authenticated user.")
+//     );
+//   }
 
-  const csrs = await CSR.find({ domainName });
+//   const csrs = await CSR.find({ domainName });
 
-  // if (csrs.length === 0) {
-  //   return next(new CustomError(404, "No CSRs found for this domain."));
-  // }
+//   // if (csrs.length === 0) {
+//   //   return next(new CustomError(404, "No CSRs found for this domain."));
+//   // }
 
-  res.status(200).json({
-    code: 200,
-    status: "success",
-    data: {
-      CSR: csrs.map((csr) => ({
-        ...csr.toObject(),
-        count: csr.images.length,
-      })),
-    },
-  });
-});
+//   res.status(200).json({
+//     code: 200,
+//     status: "success",
+//     data: {
+//       CSR: csrs.map((csr) => ({
+//         ...csr.toObject(),
+//         count: csr.images.length,
+//       })),
+//     },
+//   });
+// });
 
-export const getCsrCmsById = asyncErrorHandler(async (req, res, next) => {
-  const domainName = req.user.domainName;
-  const { id } = req.params;
+// export const getCsrCmsById = asyncErrorHandler(async (req, res, next) => {
+//   const domainName = req.user.domainName;
+//   const { id } = req.params;
 
-  if (!domainName) {
-    return next(
-      new CustomError(400, "Domain name not found for the authenticated user.")
-    );
-  }
+//   if (!domainName) {
+//     return next(
+//       new CustomError(400, "Domain name not found for the authenticated user.")
+//     );
+//   }
 
-  if (!id) {
-    return next(new CustomError(400, "CSR ID is required."));
-  }
+//   if (!id) {
+//     return next(new CustomError(400, "CSR ID is required."));
+//   }
 
-  const csr = await CSR.findOne({ _id: id, domainName });
+//   const csr = await CSR.findOne({ _id: id, domainName });
 
-  if (!csr) {
-    return next(
-      new CustomError(404, "CSR not found for the given domain and ID.")
-    );
-  }
+//   if (!csr) {
+//     return next(
+//       new CustomError(404, "CSR not found for the given domain and ID.")
+//     );
+//   }
 
-  res.status(200).json({
-    code: 200,
-    status: "success",
-    data: {
-      CSR: {
-        ...csr.toObject(),
-        count: csr.images.length,
-      },
-    },
-  });
-});
+//   res.status(200).json({
+//     code: 200,
+//     status: "success",
+//     data: {
+//       CSR: {
+//         ...csr.toObject(),
+//         count: csr.images.length,
+//       },
+//     },
+//   });
+// });
 
 export const csrUpdate = asyncErrorHandler(async (req, res, next) => {
   const { id } = req.params;
-  const { domainName } = req.user;
   const { category, title, body, eventDate, imageIds } = req.body;
 
-  const csr = await CSR.findOne({ _id: id, domainName });
+  const csr = await CSR.findOne({ _id: id });
   if (!csr) {
     return next(
       new CustomError(404, "CSR not found or not authorized to update.")
@@ -313,10 +348,10 @@ export const csrUpdate = asyncErrorHandler(async (req, res, next) => {
 
 export const csrDelete = asyncErrorHandler(async (req, res, next) => {
   const { id } = req.params;
-  const { domainName } = req.user;
 
   // Find the CSR by ID and domainName
-  const csr = await CSR.findOne({ _id: id, domainName });
+  const csr = await CSR.findOne({ _id: id });
+
   if (!csr) {
     return next(
       new CustomError(404, "CSR not found or not authorized to delete")
@@ -354,16 +389,15 @@ export const csrDelete = asyncErrorHandler(async (req, res, next) => {
 
 export const csrImageDelete = asyncErrorHandler(async (req, res, next) => {
   const { id, imageId } = req.params;
-  const { domainName } = req.user;
 
   // Find the CSR by ID and domainName
-  const csr = await CSR.findOne({ _id: id, domainName });
+  const csr = await CSR.findOne({ _id: id });
+
   if (!csr) {
     return next(
-      new CustomError(404, "CSR not found or not authorized to update")
+      new CustomError(404, "CSR not found or not authorized to delete")
     );
   }
-
   // Find the image to be deleted
   const imageIndex = csr.images.findIndex(
     (img) => img._id.toString() === imageId
