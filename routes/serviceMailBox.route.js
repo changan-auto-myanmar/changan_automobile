@@ -5,12 +5,13 @@ import {
   submittedForm,
   deleteform,
 } from "../controllers/serviceMailBox.controller.js";
+import { protect } from "../controllers/auth.controller.js";
 
 const router = express.Router();
 
 router.post("/", formSubmit);
-router.get("/", getAllforms);
-router.post("/delete", deleteform);
-router.get("/:id", submittedForm);
+router.get("/", protect, getAllforms);
+router.post("/delete", protect, deleteform);
+router.get("/:id", protect, submittedForm);
 
 export default router;
