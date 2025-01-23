@@ -6,6 +6,7 @@ import {
   deleteShowcase,
 } from "../controllers/changanShowcase.controller.js";
 import { dynamicFieldsUpload } from "../middlewares/dynamicFilesFeildsMiddleware.js";
+import { protect } from "../controllers/auth.controller.js";
 
 const router = express.Router();
 
@@ -21,10 +22,20 @@ const carColorNames = Array.from({ length: 10 }, (_, index) => ({
 
 const fieldsConfig = [...carColorFields, ...carColorNames];
 
-router.post("/showcase", dynamicFieldsUpload(fieldsConfig), createShowcase);
-router.get("/showcases", getAllShowcases);
-router.get("/showcase/:id", getShowcaseById);
-router.delete("/showcase/:id", deleteShowcase);
-router.put("/showcase/:id", dynamicFieldsUpload(fieldsConfig), updateShowcase);
+router.post(
+  "/showcase",
+  protect,
+  dynamicFieldsUpload(fieldsConfig),
+  createShowcase
+);
+router.get("/showcases", protect, getAllShowcases);
+router.get("/showcase/:id", protect, getShowcaseById);
+router.delete("/showcase/:id", protect, deleteShowcase);
+router.put(
+  "/showcase/:id",
+  protect,
+  dynamicFieldsUpload(fieldsConfig),
+  updateShowcase
+);
 
 export default router;
