@@ -1,3 +1,4 @@
+import fs from "fs";
 import multer from "multer";
 import CustomError from "../utils/customError.js";
 
@@ -21,6 +22,11 @@ const imageStorage = multer.diskStorage({
       uploadPath = "public/others";
     }
 
+    // Create the directory if it doesn't exist
+    if (!fs.existsSync(uploadPath)) {
+      fs.mkdirSync(uploadPath, { recursive: true });
+    }
+
     cb(null, uploadPath);
   },
   filename: function (req, file, cb) {
@@ -32,13 +38,8 @@ const imageStorage = multer.diskStorage({
 const imageFileFilter = function (req, file, cb) {
   const allowedMimeTypes = [
     "image/jpeg",
-
     "image/png",
-
     "image/gif",
-    "image/webp",
-    "image/svg+xml",
-    ,
     "image/webp",
     "image/svg+xml",
   ];
