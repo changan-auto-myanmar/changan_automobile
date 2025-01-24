@@ -9,8 +9,6 @@ export const bannerUpload = asyncErrorHandler(async (req, res, next) => {
     return next(new CustomError(400, "No Image to upload"));
   }
   const { filename, path: filepath } = req.file;
-  // const domainName = req.user.domainName;
-  // const newBanner = new Banner({ filename, filepath, domainName });
   const newBanner = new Banner({ filename, filepath });
   const savedBanner = await newBanner.save();
   const { __v, uploadDate, ...rest } = savedBanner._doc;
@@ -23,44 +21,6 @@ export const bannerUpload = asyncErrorHandler(async (req, res, next) => {
     },
   });
 });
-
-// export const publicBanner = asyncErrorHandler(async (req, res, next) => {
-//   const { domainName } = req;
-
-//   if (!domainName) {
-//     return next(new CustomError(400, "Domain name not found."));
-//   }
-
-//   const banners = await Banner.find({});
-
-//   res.status(200).json({
-//     code: 200,
-//     status: "success",
-//     data: {
-//       banners,
-//     },
-//   });
-// });
-
-// export const cmsBanner = asyncErrorHandler(async (req, res, next) => {
-//   const domainName = req.user.domainName;
-
-//   if (!domainName) {
-//     return next(
-//       new CustomError(400, "Domain name not found for the authenticated user.")
-//     );
-//   }
-
-//   const banners = await Banner.find({ domainName });
-
-//   res.status(200).json({
-//     code: 200,
-//     status: "success",
-//     data: {
-//       banners,
-//     },
-//   });
-// });
 
 export const publicBanner = asyncErrorHandler(async (req, res, next) => {
   const banners = await Banner.find({});
@@ -83,7 +43,6 @@ export const updateBanner = asyncErrorHandler(async (req, res, next) => {
       new CustomError(404, "Banner not found or not authorized to update")
     );
   }
-  // Delete the old image file from the file system
   if (!req.file) {
     return next(new CustomError(400, "No image is selected to update"));
   } else {

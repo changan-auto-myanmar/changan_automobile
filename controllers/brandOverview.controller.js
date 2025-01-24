@@ -74,25 +74,21 @@ export const getById = asyncErrorHandler(async (req, res, next) => {
 export const additionalUpload = asyncErrorHandler(async (req, res, next) => {
   const { id } = req.params;
 
-  // Check if files are provided
   if (!req.files || req.files.length === 0) {
     return next(new CustomError(400, "No images to upload"));
   }
 
-  // Check if the number of files exceeds the limit
   if (req.files.length > 8) {
     return next(
       new CustomError(400, "You can only upload a maximum of 8 images")
     );
   }
 
-  // Find the CSR by ID
   const carBrandOverview = await BrandOverview.findById(id);
   if (!carBrandOverview) {
     return next(new CustomError(404, "There is no data with the given Id"));
   }
 
-  // Check if the total number of images exceeds the limit
   const totalImages = carBrandOverview.images.length + req.files.length;
   if (totalImages > 8) {
     return next(
@@ -100,7 +96,6 @@ export const additionalUpload = asyncErrorHandler(async (req, res, next) => {
     );
   }
 
-  // Add new images to the CSR
   const newImages = req.files.map((file) => ({
     filename: file.filename,
     filepath: file.path,
@@ -133,12 +128,9 @@ export const deleteBrandOverview = asyncErrorHandler(async (req, res, next) => {
     for (const image of carBrandOverview.images) {
       const imagePath = image.filepath;
       if (imagePath && fs.existsSync(imagePath)) {
-        // Synchronously check if the file exists
         try {
-          fs.unlinkSync(imagePath); // Synchronously delete the image file
-          console.log(`Deleted image file: ${imagePath}`);
+          fs.unlinkSync(imagePath);
         } catch (err) {
-          console.error(`Failed to delete image file at: ${imagePath}`);
           return next(
             new CustomError(500, "Failed to delete the associated image file")
           );
@@ -147,7 +139,6 @@ export const deleteBrandOverview = asyncErrorHandler(async (req, res, next) => {
     }
   }
 
-  // Delete the CSR from the database
   await BrandOverview.deleteOne({ _id: id });
 
   res.status(200).json({
@@ -161,13 +152,10 @@ export const brandOverviewImageDelete = asyncErrorHandler(
   async (req, res, next) => {
     const { id, imageId } = req.params;
 
-    // Find the CSR by ID and domainName
     const brandOverview = await BrandOverview.findOne({ _id: id });
     if (!brandOverview) {
       return next(new CustomError(404, "Data cannot find with the given Id."));
     }
-
-    // Find the image to be deleted
     const imageIndex = brandOverview.images.findIndex(
       (img) => img._id.toString() === imageId
     );
@@ -175,7 +163,6 @@ export const brandOverviewImageDelete = asyncErrorHandler(
       return next(new CustomError(404, "Image not found"));
     }
 
-    // Remove the old image file from the filesystem if it exists
     const oldImage = brandOverview.images[imageIndex];
     if (oldImage.filepath && fs.existsSync(oldImage.filepath)) {
       try {
@@ -184,8 +171,6 @@ export const brandOverviewImageDelete = asyncErrorHandler(
         return next(new CustomError(500, "Failed to delete the current image"));
       }
     }
-
-    // Remove the image from the CSR's images array
     brandOverview.images.splice(imageIndex, 1);
     await brandOverview.save();
 

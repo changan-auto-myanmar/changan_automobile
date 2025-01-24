@@ -12,16 +12,11 @@ import CustomError from "./utils/customError.js";
 import bannerRouter from "./routes/banner.route.js";
 import globalErrorHandler from "./controllers/error.controller.js";
 import authRouter from "./routes/auth.route.js";
-import userRouter from "./routes/user.route.js";
 import changanShowcaseRouter from "./routes/changanShowcase.route.js";
 import youtubeRouter from "./routes/youtube.route.js";
 import serviceMailBoxRouter from "./routes/serviceMailBox.route.js";
 import contactMailboxRouter from "./routes/contactMailBox.route.js";
-import testimonialRouter from "./routes/testimonial.route.js";
-import videoBannerRouter from "./routes/videoBanner.route.js";
 import csrRouter from "./routes/csr.route.js";
-import companyLogoRouter from "./routes/companyLogo.route.js";
-import partnershipRouter from "./routes/partnership.route.js";
 import setupSwagger from "./configs/swagger.config.js";
 import carBrandOverviewRouter from "./routes/brandOverview.route.js";
 
@@ -69,17 +64,12 @@ app.use("/api/v1/videos", express.static("videos"));
 app.use(express.json());
 //Route Mounting
 app.use("/api/v1/auth", authRouter);
-app.use("/api/v1/users", userRouter);
 app.use("/api/v1", carBrandOverviewRouter);
 app.use("/api/v1", changanShowcaseRouter);
 app.use("/api/v1/youtube", youtubeRouter);
 app.use("/api/v1/service", serviceMailBoxRouter);
 app.use("/api/v1", bannerRouter);
-app.use("/api/v1", videoBannerRouter);
-app.use("/api/v1", companyLogoRouter);
-app.use("/api/v1", partnershipRouter);
 app.use("/api/v1", csrRouter);
-app.use("/api/v1", testimonialRouter);
 app.use("/api/v1/mail-box", contactMailboxRouter);
 setupSwagger(app);
 

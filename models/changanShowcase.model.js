@@ -28,9 +28,7 @@ const CarColorSchema = new Schema({
   },
 });
 
-// Main schema for Changan Showcase
 const changanShowcaseSchema = new Schema({
-  // Stage-1 (Car Mock-up)
   car_brand: {
     type: String,
     enum: ["CHANGAN", "DEEPAL", "KAICHEN"],
@@ -50,7 +48,6 @@ const changanShowcaseSchema = new Schema({
   },
   car_slogan: {
     type: String,
-    // required: true,
   },
   car_porche: {
     type: FileSchema,

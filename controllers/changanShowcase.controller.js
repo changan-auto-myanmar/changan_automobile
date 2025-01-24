@@ -8,9 +8,6 @@ export const createShowcase = asyncErrorHandler(async (req, res, next) => {
   const { car_brand, car_name, car_slogan } = req.body;
   const car_color = req.body.car_color ? JSON.parse(req.body.car_color) : [];
 
-  console.log("Received Car Color:", car_color);
-  console.log("Received Files:", req.files);
-
   if (!car_brand || !car_name) {
     return next(new CustomError(400, "Please fill all required fields."));
   }
@@ -32,17 +29,6 @@ export const createShowcase = asyncErrorHandler(async (req, res, next) => {
     );
     const carColorFile = req.files.find(
       (file) => file.fieldname === `car_color[${index}].car_color`
-    );
-
-    console.log(
-      `Car Color #${index + 1} - Car Image Fieldname: ${
-        carImage ? carImage.fieldname : "Not Found"
-      }`
-    );
-    console.log(
-      `Car Color #${index + 1} - Car Color File Fieldname: ${
-        carColorFile ? carColorFile.fieldname : "Not Found"
-      }`
     );
 
     if (!carImage || !carColorFile) {
@@ -88,7 +74,6 @@ export const createShowcase = asyncErrorHandler(async (req, res, next) => {
   );
   const galleryFiles = req.files.filter((file) => file.fieldname === "gallery");
 
-  // File count validation
   if (carExteriorFiles.length > 8)
     return next(
       new CustomError(400, "Car Exterior images cannot exceed more than 8.")
@@ -140,7 +125,6 @@ export const createShowcase = asyncErrorHandler(async (req, res, next) => {
     code: 201,
     status: "success",
     message: "Showcase created successfully.",
-    // data: { showcase: savedShowcase },
   });
 });
 
@@ -219,7 +203,6 @@ export const updateShowcase = asyncErrorHandler(async (req, res, next) => {
   const { id } = req.params;
   const { car_brand, car_name, car_slogan, car_color } = req.body;
 
-  // Find showcase by ID
   const showcase = await changanShowcase.findById(id);
   if (!showcase) {
     return next(new CustomError(404, "Showcase not found"));

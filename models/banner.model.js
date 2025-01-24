@@ -14,10 +14,6 @@ const bannerSchema = new Schema({
     type: Date,
     default: Date.now,
   },
-  // domainName: {
-  //   type: String,
-  //   required: true,
-  // },
 });
 
 const Banner = mongoose.model("Banner", bannerSchema);
