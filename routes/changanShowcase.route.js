@@ -28,8 +28,8 @@ router.post(
   dynamicFieldsUpload(fieldsConfig),
   createShowcase
 );
-router.get("/showcases", protect, getAllShowcases);
-router.get("/showcase/:id", protect, getShowcaseById);
+router.get("/showcases", getAllShowcases);
+router.get("/showcase/:id", getShowcaseById);
 router.delete("/showcase/:id", protect, deleteShowcase);
 router.put(
   "/showcase/:id",
