@@ -31,7 +31,7 @@ const CarColorSchema = new Schema({
 const changanShowcaseSchema = new Schema({
   car_brand: {
     type: String,
-    enum: ["CHANGAN", "DEEPAL", "KAICHEN"],
+    enum: ["CHANGAN", "DEEPAL", "KAICHENG"],
     required: true,
   },
   car_name: {
