@@ -1,6 +1,6 @@
 import multer from "multer";
-
 import path from "path";
+import fs from "fs";
 
 const imageStorage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -10,6 +10,11 @@ const imageStorage = multer.diskStorage({
       uploadPath = "public/showcase";
     } else {
       uploadPath = "public/others";
+    }
+
+    // Auto-create directory if it doesn't exist
+    if (!fs.existsSync(uploadPath)) {
+      fs.mkdirSync(uploadPath, { recursive: true });
     }
 
     cb(null, uploadPath);
@@ -27,7 +32,7 @@ const imageFileFilter = function (req, file, cb) {
     "image/gif",
     "image/webp",
     "image/svg+xml",
-    "application/pdf", // Added PDF MIME type
+    "application/pdf", // Allow PDFs
   ];
 
   if (allowedMimeTypes.includes(file.mimetype)) {
@@ -43,14 +48,8 @@ const imageFileFilter = function (req, file, cb) {
 export const dynamicFieldsUpload = (fieldsConfig) => {
   const multerUpload = multer({
     storage: imageStorage,
-
     fileFilter: imageFileFilter,
-
-    limits: { fileSize: 50 * 1024 * 1024 },
-  });
-
-  const uploadFields = fieldsConfig.map((field) => {
-    return multerUpload.any();
+    limits: { fileSize: 50 * 1024 * 1024 }, // 50MB file size limit
   });
 
   return (req, res, next) => {
@@ -58,10 +57,14 @@ export const dynamicFieldsUpload = (fieldsConfig) => {
       if (error) {
         return next(error);
       }
-      console.log(
-        "Capture failed:",
-        req.files.map((file) => file.filename)
-      );
+
+      if (req.files) {
+        console.log(
+          "Uploaded files:",
+          req.files.map((file) => file.filename)
+        );
+      }
+
       next();
     });
   };
