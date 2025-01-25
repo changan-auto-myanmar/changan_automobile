@@ -33,7 +33,7 @@ const changanShowcaseSchema = new Schema({
   // Stage-1 (Car Mock-up)
   car_brand: {
     type: String,
-    enum: ["CHANGAN", "DEEPAL", "KAICHEN"],
+    enum: ["CHANGAN", "DEEPAL", "KAICHENG"],
     required: true,
   },
   car_name: {
