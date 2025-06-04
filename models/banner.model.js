@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const Schema = mongoose.Schema;
 const bannerSchema = new Schema({
-  bannerImageUrl: {
+  url: {
     type: String,
     required: true,
   },
@@ -13,6 +13,10 @@ const bannerSchema = new Schema({
   updatedAt: {
     type: Date,
     default: null,
+  },
+  cloudinaryPublicId: {
+    type: String,
+    required: true,
   },
 });
 
