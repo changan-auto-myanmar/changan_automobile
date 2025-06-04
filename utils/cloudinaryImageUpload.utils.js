@@ -76,12 +76,17 @@ export const imageUploadToCloudinary = async (fileBuffer, folderName) => {
             )
           );
         } else {
-          if (result && result.secure_url) {
-            resolve(result.secure_url);
+          if (result && result.secure_url && result.public_id) {
+            // Ensure public_id is also present
+            resolve({
+              // Resolve with an object containing both
+              url: result.secure_url,
+              cloudinaryPublicId: result.public_id,
+            });
           } else {
             reject(
               new Error(
-                "Cloudinary upload succeeded, but no secure_url was returned."
+                "Cloudinary upload succeeded, but secure_url or public_id was missing."
               )
             );
           }
@@ -90,16 +95,4 @@ export const imageUploadToCloudinary = async (fileBuffer, folderName) => {
     );
     streamifier.createReadStream(fileBuffer).pipe(stream);
   });
-};
-
-export const extractPublicId = (url) => {
-  if (!url) {
-    return null;
-  }
-  const parts = url.split("/");
-  const imageName = parts.pop();
-  const nameWithoutExtension = imageName.split(".")[0];
-  const publicId =
-    parts.slice(parts.length - 2).join("/") + "/" + nameWithoutExtension;
-  return publicId;
 };

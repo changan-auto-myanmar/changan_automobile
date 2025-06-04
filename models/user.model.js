@@ -5,11 +5,6 @@ import crypto from "crypto";
 
 const Schema = mongoose.Schema;
 const userSchema = new Schema({
-  // domainName: {
-  //   type: String,
-  //   required: [true, "Please Enter Your Domain Name"],
-  //   unique: true,
-  // },
   email: {
     type: String,
     required: [true, "Please Enter Your Email"],
@@ -32,10 +27,6 @@ const userSchema = new Schema({
       message: "Password Doesn't Match.",
     },
   },
-  // active: {
-  //   type: Boolean,
-  //   default: true,
-  // },
   role: {
     type: String,
     enum: ["admin", "superadmin"],
