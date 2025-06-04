@@ -4,8 +4,6 @@ import express from "express";
 import cors from "cors";
 import rateLimit from "express-rate-limit";
 import helmet from "helmet";
-import sanitize from "express-mongo-sanitize";
-import xss from "xss-clean";
 
 // User Define Module
 import CustomError from "./utils/customError.js";
@@ -61,9 +59,9 @@ app.use(
 );
 
 app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 app.use(express.json({ limit: "10kb" }));
-app.use(sanitize());
-app.use(xss());
+
 app.use("/api/v1/public", express.static("public"));
 app.use("/api/v1/videos", express.static("videos"));
 app.use(express.json());
@@ -84,7 +82,7 @@ app.use("/api/v1/mail-box", contactMailboxRouter);
 setupSwagger(app);
 
 //404-Error Handler
-app.all("*", (req, res, next) => {
+app.all("/*any", (req, res, next) => {
   const err = new CustomError(
     404,
     `Can't find ${req.originalUrl} on the server!`
