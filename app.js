@@ -20,7 +20,6 @@ import videoBannerRouter from "./routes/videoBanner.route.js";
 import csrRouter from "./routes/csr.route.js";
 import companyLogoRouter from "./routes/companyLogo.route.js";
 import partnershipRouter from "./routes/partnership.route.js";
-import setupSwagger from "./configs/swagger.config.js";
 import carBrandOverviewRouter from "./routes/brandOverview.route.js";
 
 const app = express();
@@ -79,7 +78,6 @@ app.use("/api/v1", partnershipRouter);
 app.use("/api/v1", csrRouter);
 app.use("/api/v1", testimonialRouter);
 app.use("/api/v1/mail-box", contactMailboxRouter);
-setupSwagger(app);
 
 //404-Error Handler
 app.all("/*any", (req, res, next) => {
