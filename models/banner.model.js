@@ -2,22 +2,18 @@ import mongoose from "mongoose";
 
 const Schema = mongoose.Schema;
 const bannerSchema = new Schema({
-  filename: {
+  bannerImageUrl: {
     type: String,
     required: true,
   },
-  filepath: {
-    type: String,
-    required: true,
-  },
-  uploadDate: {
+  createdAt: {
     type: Date,
     default: Date.now,
   },
-  // domainName: {
-  //   type: String,
-  //   required: true,
-  // },
+  updatedAt: {
+    type: Date,
+    default: null,
+  },
 });
 
 const Banner = mongoose.model("Banner", bannerSchema);

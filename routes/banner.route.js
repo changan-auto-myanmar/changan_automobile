@@ -2,24 +2,27 @@ import express from "express";
 import {
   bannerUpload,
   publicBanner,
-  // cmsBanner,
-  bannerDelete,
   updateBanner,
+  deleteBanner,
 } from "../controllers/banner.controller.js";
-import { singleImage } from "../middlewares/imageUploadMiddleware.js";
 import { protect } from "../controllers/auth.controller.js";
-// import domainExtracter from "../middlewares/domainExtracter.js";
+import multerImageUpload from "../middlewares/multerImageUpload.middleware.js";
 
 const router = express.Router();
 
-// router.post("/banners", protect, singleImage, bannerUpload);
-// router.get("/banners/public", domainExtracter, publicBanner);
-// router.get("/banners/cms", protect, cmsBanner);
-// router.delete("/banners/:id", protect, bannerDelete);
-// router.patch("/banners/:id", protect, singleImage, updateBanner);
-router.post("/banners", protect, singleImage, bannerUpload);
-router.get("/banners/public", publicBanner);
-// router.get("/banners/cms", protect, cmsBanner);
-router.delete("/banners/:id", protect, bannerDelete);
-router.patch("/banners/:id", protect, singleImage, updateBanner);
+router.post(
+  "/banners",
+  protect,
+  multerImageUpload.single("bannerImageUrl"),
+  bannerUpload
+);
+router.get("/banners", publicBanner);
+router.patch(
+  "/banners/:id",
+  protect,
+  multerImageUpload.single("bannerImageUrl"),
+  updateBanner
+);
+router.delete("/banners/:id", protect, deleteBanner);
+
 export default router;
