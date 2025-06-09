@@ -1,10 +1,20 @@
 import mongoose from "mongoose";
 
-const { Schema } = mongoose;
+const Schema = mongoose.Schema;
+
+const csrImagesSchema = new Schema({
+  _id: { type: mongoose.Schema.Types.ObjectId, auto: true },
+  url: {
+    type: String,
+    required: true,
+  },
+  cloudinaryPublicId: {
+    type: String,
+    required: true,
+  },
+});
 
 const csrSchema = new Schema({
-  // domainName: { type: String, required: true, trim: true, index: true },
-
   category: {
     type: String,
     enum: ["Events", "Promotions", "News"],
@@ -13,12 +23,7 @@ const csrSchema = new Schema({
 
   title: { type: String, required: true, trim: true },
 
-  images: [
-    {
-      filename: { type: String, required: true },
-      filepath: { type: String, required: true },
-    },
-  ],
+  csrImages: [csrImagesSchema],
 
   eventDate: {
     type: Date,
@@ -31,11 +36,12 @@ const csrSchema = new Schema({
     },
   },
 
-  body: { type: String, required: true, trim: true },
+  textBody: { type: String, required: true, trim: true },
 
   createdAt: { type: Date, default: Date.now },
+  updatedAt: { type: Date, default: null },
 });
 
-const CSR = mongoose.model("CSR", csrSchema);
+const CSR = mongoose.model("Csr", csrSchema);
 
 export default CSR;
