@@ -60,7 +60,6 @@ app.use(
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.json({ limit: "10kb" }));
-
 app.use("/api/v1/public", express.static("public"));
 app.use("/api/v1/videos", express.static("videos"));
 app.use(express.json());
