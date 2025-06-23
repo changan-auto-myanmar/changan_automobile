@@ -2,17 +2,21 @@ import mongoose from "mongoose";
 
 const Schema = mongoose.Schema;
 const bannerSchema = new Schema({
-  filename: {
+  url: {
     type: String,
     required: true,
   },
-  filepath: {
-    type: String,
-    required: true,
-  },
-  uploadDate: {
+  createdAt: {
     type: Date,
     default: Date.now,
+  },
+  updatedAt: {
+    type: Date,
+    default: null,
+  },
+  cloudinaryPublicId: {
+    type: String,
+    required: true,
   },
 });
 

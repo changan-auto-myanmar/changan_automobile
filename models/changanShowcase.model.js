@@ -2,24 +2,25 @@ import mongoose from "mongoose";
 
 const Schema = mongoose.Schema;
 
-const FileSchema = new Schema({
-  filename: {
+const FileUploadSchema = new Schema({
+  _id: { type: mongoose.Schema.Types.ObjectId, auto: true },
+  url: {
     type: String,
     required: true,
   },
-  filepath: {
+  cloudinaryPublicId: {
     type: String,
     required: true,
   },
 });
 
 const CarColorSchema = new Schema({
-  car_image: {
-    type: FileSchema,
+  car_color_image: {
+    type: FileUploadSchema,
     required: true,
   },
-  car_color: {
-    type: FileSchema,
+  car_color_swatches: {
+    type: FileUploadSchema,
     required: true,
   },
   color_name: {
@@ -39,30 +40,30 @@ const changanShowcaseSchema = new Schema({
     required: true,
   },
   mockup: {
-    type: FileSchema,
-    required: true,
+    type: FileUploadSchema,
+    required: false,
   },
   car_banner: {
-    type: FileSchema,
-    required: true,
+    type: FileUploadSchema,
+    required: false,
   },
   car_slogan: {
     type: String,
   },
-  car_porche: {
-    type: FileSchema,
-    required: true,
+  car_brochure: {
+    type: FileUploadSchema,
+    required: false,
   },
   car_exterior: {
-    type: [FileSchema],
+    type: [FileUploadSchema],
     required: false,
   },
   car_interior: {
-    type: [FileSchema],
+    type: [FileUploadSchema],
     required: false,
   },
   gallery: {
-    type: [FileSchema],
+    type: [FileUploadSchema],
     required: false,
   },
 
@@ -70,11 +71,19 @@ const changanShowcaseSchema = new Schema({
     type: [CarColorSchema],
     required: false,
   },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
+  updatedAt: {
+    type: Date,
+    default: null,
+  },
 });
 
-const changanShowcase = mongoose.model(
+const ChanganShowcase = mongoose.model(
   "ChanganShowcase",
   changanShowcaseSchema
 );
 
-export default changanShowcase;
+export default ChanganShowcase;

@@ -1,23 +1,32 @@
 import express from "express";
 import {
-  csrUpload,
-  csrAdditionalUpload,
-  csrPublic,
-  csrUpdate,
-  csrDelete,
-  csrImageDelete,
-  getCsrPublicById,
+  createCsrContent,
+  addImagesToCsrContent,
+  getAllCsrContents,
+  getCsrContentById,
+  deleteCsrDocument,
+  deleteCsrImage,
+  updateCsrTextContent,
+  replaceCsrImage,
 } from "../controllers/csr.controller.js";
-import { protect } from "../controllers/auth.controller.js";
-import { multiImage } from "../middlewares/imageUploadMiddleware.js";
+import multerImageUpload from "../middlewares/multerImageUpload.middleware.js";
 const router = express.Router();
 
-router.post("/csr", protect, multiImage, csrUpload);
-router.get("/csr/public", csrPublic);
-router.get("/csr/public/:id", getCsrPublicById);
-router.post("/csr/:id", protect, multiImage, csrAdditionalUpload);
-router.patch("/csr/:id", protect, multiImage, csrUpdate);
-router.delete("/csr/:id/image/:imageId", protect, csrImageDelete);
-router.delete("/csr/:id", protect, csrDelete);
+router.post("/csr", multerImageUpload.array("csrImages", 5), createCsrContent);
+router.get("/csr/public", getAllCsrContents);
+router.get("/csr/public/:id", getCsrContentById);
+router.post(
+  "/csr/:id",
+  multerImageUpload.array("csrImages", 5),
+  addImagesToCsrContent
+);
+router.patch("/csr/text/:id", updateCsrTextContent);
+router.patch(
+  "/csr/image/:id/:imageId",
+  multerImageUpload.single("csrImages"),
+  replaceCsrImage
+);
+router.delete("/csr/:id", deleteCsrDocument);
+router.delete("/csr/:id/image/:imageId", deleteCsrImage);
 
 export default router;
