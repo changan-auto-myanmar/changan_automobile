@@ -15,8 +15,8 @@ import youtubeRouter from "./routes/youtube.route.js";
 import serviceMailBoxRouter from "./routes/serviceMailBox.route.js";
 import contactMailboxRouter from "./routes/contactMailBox.route.js";
 import csrRouter from "./routes/csr.route.js";
-import companyLogoRouter from "./routes/companyLogo.route.js";
-import partnershipRouter from "./routes/partnership.route.js";
+// import companyLogoRouter from "./routes/companyLogo.route.js";
+// import partnershipRouter from "./routes/partnership.route.js";
 import carBrandOverviewRouter from "./routes/brandOverview.route.js";
 
 const app = express();
